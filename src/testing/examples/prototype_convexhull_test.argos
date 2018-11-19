@@ -30,18 +30,21 @@
     <!-- ******************************* -->
     <!-- * Autonomous Robot Definition * -->
     <!-- ******************************* -->
-    <prototype id="box0" movable="true">
-      <body position="0,0,0" orientation="0,0,0" />
-      <links ref="lower_chassis">
-        <link id="lower_chassis" geometry="box" size="0.08,0.05,0.03" mass="0.250"
-              position="0,0,0.03"/>
+    <prototype id="prototype0" movable="true">
+      <body position="0,0,0.2" orientation="0,0,0" />
+      <links ref="box0">
+        <link id="box0" geometry="box" size="0.08,0.05,0.03" mass="0.250"
+              position="0,0,0"/>
+
+        <link id="box1" geometry="box" size="0.08,0.05,0.03" mass="0.250"
+              position="0.1,0,0"/>
       </links>
-      <!--joints>
-        <joint type="revolute" axis="0,0,1" id="lower_chassis_wheel_fl">
-          <parent link="lower_chassis" position="0.031750, 0.02850, 0.01000" orientation="0,0,0"/>
-          <child link="wheel_fl" position="0,0,0" orientation="0,0,90"/>
+      <joints>
+        <joint type="fixed" axis="0,0,1" id="box0andbox1">
+          <parent link="box0" position="0.0, 0.0, 0.0" orientation="0,0,0"/>
+          <child link="box1" position="-0.1,0,0" orientation="0,0,90"/>
         </joint>
-      </joints -->
+      </joints>
     </prototype>
   </arena>
 
