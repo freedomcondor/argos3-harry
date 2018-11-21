@@ -31,6 +31,10 @@ namespace argos {
 
       static std::shared_ptr<btCollisionShape>
          RequestSphere(btScalar f_radius);
+
+      static std::shared_ptr<btCollisionShape>
+         RequestConvechull(btScalar f_radius);
+      /* TODO: a point list as parameter*/
       
    private:
 

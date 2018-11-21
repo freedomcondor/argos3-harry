@@ -33,6 +33,7 @@ namespace argos {
          CYLINDER,
          BOX,
          SPHERE,
+         CONVEXHULL,
       };
 
    public:
@@ -71,6 +72,7 @@ namespace argos {
 
 		EGeometry m_eGeometry;
 		CVector3 m_cExtents;
+      std::vector<CVector3> m_vecConvexhullPoints;
 		Real m_fMass;
       SAnchor* m_psAnchor;
    };
