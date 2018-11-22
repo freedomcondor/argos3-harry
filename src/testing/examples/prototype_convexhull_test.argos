@@ -33,20 +33,54 @@
     <prototype id="prototype0" movable="true">
       <body position="0,0,0.2" orientation="0,0,0" />
       <links ref="box0">
-        <link id="box0" geometry="box" size="0.08,0.05,0.03" mass="0.250"
+        <link id="box0" geometry="box" size="0.08,0.05,0.03" mass="0.050"
               position="0,0,0"/>
-        <link id="box1" geometry="convexhull" mass="0.270"
-              position="0.1,0,0">
-              <point position="0.1, 0.1, 0.1" />
-              <point position="0.1, -0.1, 0.1"/>
-              <point position="-0.1, -0.1, 0.1"/>
-              <point position="-0.1, 0.1, 0.1"/>
+        <link id="convex0" geometry="convexhull" mass="1.0"
+              position="0.3,0,0">
+              <point position=" 0.04,  0.02,  0.02"/>
+              <point position=" 0.04,  0.02, -0.02"/>
+
+              <point position=" 0.02,  0.04,  0.02"/>
+              <point position=" 0.02,  0.04, -0.02"/>
+
+              <point position="-0.02,  0.04,  0.02"/>
+              <point position="-0.02,  0.04, -0.02"/>
+
+              <point position="-0.04,  0.02,  0.02"/>
+              <point position="-0.04,  0.02, -0.02"/>
+
+              <point position="-0.04, -0.02,  0.02"/>
+              <point position="-0.04, -0.02, -0.02"/>
+
+              <point position="-0.02, -0.04,  0.02"/>
+              <point position="-0.02, -0.04, -0.02"/>
+
+              <point position=" 0.02, -0.04,  0.02"/>
+              <point position=" 0.02, -0.04, -0.02"/>
+
+              <point position=" 0.04, -0.02,  0.02"/>
+              <point position=" 0.04, -0.02, -0.02"/>
+
         </link>
+        <!--link id="convex0" geometry="convexhull" mass="0.070"
+              position="0,0,0">
+              <point position=" 0.1,  0.1,  0.1"/>
+              <point position=" 0.1,  0.1, -0.1"/>
+
+              <point position=" 0.1, -0.1,  0.1"/>
+              <point position=" 0.1, -0.1, -0.1"/>
+
+              <point position="-0.1, -0.1,  0.1"/>
+              <point position="-0.1, -0.1, -0.1"/>
+
+              <point position="-0.1,  0.1,  0.1"/>
+              <point position="-0.1,  0.1, -0.1"/>
+        </link-->
       </links>
       <joints>
         <joint type="fixed" axis="0,0,1" id="box0andbox1">
           <parent link="box0" position="0.0, 0.0, 0.0" orientation="0,0,0"/>
-          <child link="box1" position="-0.1,0,0" orientation="0,0,90"/>
+          <child link="convex0" position="-0.3,0,0" orientation="0,0,0"/>
         </joint>
       </joints>
     </prototype>

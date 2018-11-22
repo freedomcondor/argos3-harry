@@ -2,6 +2,7 @@
  * @file <argos3/plugins/simulator/physics_engines/dynamics3d/dynamics3d_shape_manager.cpp>
  *
  * @author Michael Allwright - <allsey87@gmail.com>
+ * @author Weixu Zhu- <zhuweixu_harry@126.com>
  */
 
 #include "dynamics3d_shape_manager.h"
@@ -101,6 +102,44 @@ namespace argos {
    CDynamics3DShapeManager::SSphereResource::SSphereResource(btScalar f_radius) : 
       Radius(f_radius),
       Shape(new btSphereShape(f_radius)) {}
+
+   /****************************************/
+   /****************************************/
+
+   std::vector<CDynamics3DShapeManager::SConvexhullResource> 
+      CDynamics3DShapeManager::m_vecConvexhullResources;
+
+   /****************************************/
+   /****************************************/
+
+   std::shared_ptr<btCollisionShape> CDynamics3DShapeManager::RequestConvexhull(const std::vector<btVector3>& vec_convexhull_points) {
+      std::vector<SConvexhullResource>::iterator itConvexhullResource;      
+      for(itConvexhullResource = std::begin(m_vecConvexhullResources);
+          itConvexhullResource != std::end(m_vecConvexhullResources);
+          ++itConvexhullResource) {
+         if(itConvexhullResource->VecConvexhullPoints == vec_convexhull_points) break;
+      }      
+      /* If the resource doesn't exist, create a new one */
+      if(itConvexhullResource == std::end(m_vecConvexhullResources)) {
+         itConvexhullResource = 
+            m_vecConvexhullResources.emplace(itConvexhullResource, vec_convexhull_points);
+      }
+      return std::static_pointer_cast<btCollisionShape>(itConvexhullResource->Shape);
+   }
+
+   /****************************************/
+   /****************************************/
+
+   CDynamics3DShapeManager::SConvexhullResource::SConvexhullResource(const std::vector<btVector3>& vec_convexhull_points) :
+      VecConvexhullPoints(vec_convexhull_points),
+      Shape(new btConvexHullShape()) {
+      std::vector<btVector3>::const_iterator itPoints;      
+      for(itPoints = std::begin(vec_convexhull_points);
+          itPoints != std::end(vec_convexhull_points);
+          ++itPoints) {
+         Shape->addPoint(*itPoints);
+      }
+   }
 
    /****************************************/
    /****************************************/

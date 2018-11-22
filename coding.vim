@@ -16,3 +16,6 @@ vsp src/plugins/simulator/physics_engines/dynamics3d/dynamics3d_shape_manager.cp
 
 tabnew src/plugins/robots/prototype/simulator/dynamics3d_prototype_model.h
 vsp src/plugins/robots/prototype/simulator/dynamics3d_prototype_model.cpp
+
+tabnew src/plugins/robots/prototype/simulator/qtopengl_prototype.h
+vsp src/plugins/robots/prototype/simulator/qtopengl_prototype.cpp

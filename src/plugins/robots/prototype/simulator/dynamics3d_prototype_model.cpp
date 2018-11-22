@@ -2,6 +2,7 @@
  * @file <argos3/plugins/robots/prototype/simulator/dynamics3d_prototype_model.cpp>
  *
  * @author Michael Allwright - <allsey87@gmail.com>
+ * @author Weixu Zhu- <zhuweixu_harry@126.com>
  */
 
 #include "dynamics3d_prototype_model.h"
@@ -21,6 +22,15 @@ namespace argos {
       btVector3 cHalfExtents(c_link_entity.GetExtents().GetX() * 0.5f,
                              c_link_entity.GetExtents().GetZ() * 0.5f,
                              c_link_entity.GetExtents().GetY() * 0.5f);
+      std::vector<btVector3> vecbtConvexhullPoints;
+      std::vector<CVector3>::const_iterator itPoints;      
+      for(itPoints = std::begin(c_link_entity.GetConvexhullPoints());
+          itPoints != std::end(c_link_entity.GetConvexhullPoints());
+          ++itPoints) {
+         vecbtConvexhullPoints.push_back(btVector3(itPoints->GetX(),
+                                                   itPoints->GetZ(),
+                                                  -itPoints->GetY()));
+      }
       std::shared_ptr<btCollisionShape> pcShape;
       switch(c_link_entity.GetGeometry()) {
       case CPrototypeLinkEntity::EGeometry::BOX:
@@ -31,6 +41,9 @@ namespace argos {
          break;
       case CPrototypeLinkEntity::EGeometry::SPHERE:
          pcShape = CDynamics3DShapeManager::RequestSphere(cHalfExtents.getZ());
+         break;
+      case CPrototypeLinkEntity::EGeometry::CONVEXHULL:
+         pcShape = CDynamics3DShapeManager::RequestConvexhull(vecbtConvexhullPoints);
          break;
       default:
          THROW_ARGOSEXCEPTION("Collision shape geometry not implemented");

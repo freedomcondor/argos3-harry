@@ -2,6 +2,7 @@
  * @file <argos3/plugins/robots/prototype/simulator/prototype_link_entity.h>
  *
  * @author Michael Allwright - <allsey87@gmail.com>
+ * @author Weixu Zhu - <zhuweixu_harry@126.com>
  */
 
 #ifndef PROTOTYPE_LINK_ENTITY_H
@@ -54,6 +55,10 @@ namespace argos {
 
       const CVector3& GetExtents() const {
          return m_cExtents;
+      }
+
+      const std::vector<CVector3>& GetConvexhullPoints() const {
+         return m_vecConvexhullPoints;
       }
 
       Real GetMass() const {

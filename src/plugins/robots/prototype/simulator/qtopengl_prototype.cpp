@@ -2,6 +2,7 @@
  * @file <argos3/plugins/robots/prototype/simulator/qtopengl_prototype.cpp>
  *
  * @author Michael Allwright - <allsey87@gmail.com>
+ * @author Weixu Zhu - <zhuweixu_harry@126.com>
  */
 
 #include "qtopengl_prototype.h"
@@ -142,6 +143,10 @@ namespace argos {
             break;
          case CPrototypeLinkEntity::EGeometry::SPHERE:
             glCallList(m_unSphereList);
+            break;
+         case CPrototypeLinkEntity::EGeometry::CONVEXHULL:
+            const std::vector<CVector3>& vecConvexhullPoints = pcLink->GetConvexhullPoints();
+            MakeConvexhull(vecConvexhullPoints);
             break;
          }
 //#ifndef NDEBUG
@@ -391,6 +396,44 @@ namespace argos {
          }
       }
       glEnd();
+      glDisable(GL_NORMALIZE);    
+   }
+
+   /****************************************/
+   /****************************************/
+
+   void CQTOpenGLPrototype::MakeConvexhull(const std::vector<CVector3>& vec_convexhull_points) {
+      glEnable(GL_NORMALIZE);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, SPECULAR);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, SHININESS);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, EMISSION);
+
+      std::vector<CVector3>::const_iterator itPoint;      
+      glBegin(GL_POLYGON);
+      for(itPoint = std::begin(vec_convexhull_points);
+          itPoint != std::end(vec_convexhull_points);
+          itPoint += 2) {
+         glVertex3f(itPoint->GetX(),itPoint->GetY(),itPoint->GetZ());
+      }
+      glEnd();
+      glBegin(GL_POLYGON);
+      for(itPoint = std::end(vec_convexhull_points);
+          itPoint != std::begin(vec_convexhull_points);
+          itPoint -= 2) {
+         glVertex3f((itPoint-1)->GetX(),(itPoint-1)->GetY(),(itPoint-1)->GetZ());
+      }
+      glEnd();
+      for(itPoint = std::begin(vec_convexhull_points);
+          itPoint != std::end(vec_convexhull_points);
+          itPoint += 2) {
+         glBegin(GL_POLYGON);
+            glVertex3f(itPoint->GetX(),itPoint->GetY(),itPoint->GetZ());
+            glVertex3f((itPoint+1)->GetX(),(itPoint+1)->GetY(),(itPoint+1)->GetZ());
+            glVertex3f((itPoint+3)->GetX(),(itPoint+3)->GetY(),(itPoint+3)->GetZ());
+            glVertex3f((itPoint+2)->GetX(),(itPoint+2)->GetY(),(itPoint+2)->GetZ());
+         glEnd();
+      }
+
       glDisable(GL_NORMALIZE);    
    }
 

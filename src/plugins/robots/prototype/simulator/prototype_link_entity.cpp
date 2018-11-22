@@ -2,6 +2,7 @@
  * @file <argos3/plugins/robots/prototype/simulator/prototype_link_entity.cpp>
  *
  * @author Michael Allwright - <allsey87@gmail.com>
+ * @author Weixu Zhu - <zhuweixu_harry@126.com>
  */
 
 #include "prototype_link_entity.h"
@@ -46,8 +47,8 @@ namespace argos {
             GetNodeAttribute(t_tree, "radius", fRadius);
             m_cExtents.Set(fRadius * 2.0f, fRadius * 2.0f, fRadius * 2.0f);
          } else if(strLinkGeometry == "convexhull") {
-            m_eGeometry = BOX;
-            //m_eGeometry = CONVEXHULL;
+            m_eGeometry = CONVEXHULL;
+            m_cExtents.Set(1.0f, 1.0f, 1.0f);
             TConfigurationNodeIterator itLink("point");
             for(itLink = itLink.begin(&t_tree);
                 itLink != itLink.end();
