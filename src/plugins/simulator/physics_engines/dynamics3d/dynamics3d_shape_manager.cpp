@@ -137,7 +137,8 @@ namespace argos {
       for(itPoints = std::begin(vec_convexhull_points);
           itPoints != std::end(vec_convexhull_points);
           ++itPoints) {
-         Shape->addPoint(*itPoints);
+         //Shape->addPoint(*itPoints);
+         Shape->addPoint(*itPoints, true);
       }
    }
 

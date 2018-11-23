@@ -130,9 +130,12 @@ namespace argos {
          glRotatef(ToDegrees(cXAngle).GetValue(), 1.0f, 0.0f, 0.0f);
          glRotatef(ToDegrees(cYAngle).GetValue(), 0.0f, 1.0f, 0.0f);
          glRotatef(ToDegrees(cZAngle).GetValue(), 0.0f, 0.0f, 1.0f);
-         glScalef(pcLink->GetExtents().GetX(),
-                  pcLink->GetExtents().GetY(),
-                  pcLink->GetExtents().GetZ());
+         if (pcLink->GetGeometry() != CPrototypeLinkEntity::EGeometry::CONVEXHULL)
+         {
+            glScalef(pcLink->GetExtents().GetX(),
+                     pcLink->GetExtents().GetY(),
+                     pcLink->GetExtents().GetZ());
+         }
          /* Draw the link */
          switch(pcLink->GetGeometry()) {
          case CPrototypeLinkEntity::EGeometry::BOX:
