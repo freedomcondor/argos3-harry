@@ -45,7 +45,8 @@ namespace argos {
       void MakeTag();
       void MakeTagTexture();
 
-      void MakeConvexhull(const std::vector<CVector3>& vec_convexhull_points);
+      void MakeConvexhull(const std::vector<CVector3>& vec_convexhull_points,
+                          const std::vector<std::vector<int>> vec_convexhull_faces);
 
    private:
 

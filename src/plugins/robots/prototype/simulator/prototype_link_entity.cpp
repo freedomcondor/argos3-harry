@@ -48,7 +48,6 @@ namespace argos {
             m_cExtents.Set(fRadius * 2.0f, fRadius * 2.0f, fRadius * 2.0f);
          } else if(strLinkGeometry == "convexhull") {
             m_eGeometry = CONVEXHULL;
-            //m_cExtents.Set(1.0f, 1.0f, 1.0f);
             m_cExtents.Set(0.0f, 0.0f, 0.0f);
             TConfigurationNodeIterator itLink("point");
             for(itLink = itLink.begin(&t_tree);
@@ -56,7 +55,7 @@ namespace argos {
                 ++itLink) {
                CVector3 cPointPosition;
                GetNodeAttribute(*itLink, "position", cPointPosition);
-               m_vecConvexhullPoints.push_back(cPointPosition);
+               m_vecPolyhedronPoints.push_back(cPointPosition);
             }
          } else {
             /* unknown geometry requested */

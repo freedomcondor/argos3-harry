@@ -133,12 +133,12 @@ namespace argos {
    CDynamics3DShapeManager::SConvexhullResource::SConvexhullResource(const std::vector<btVector3>& vec_convexhull_points) :
       VecConvexhullPoints(vec_convexhull_points),
       Shape(new btConvexHullShape()) {
+      Shape->setMargin(0);
       std::vector<btVector3>::const_iterator itPoints;      
       for(itPoints = std::begin(vec_convexhull_points);
           itPoints != std::end(vec_convexhull_points);
           ++itPoints) {
-         //Shape->addPoint(*itPoints);
-         Shape->addPoint(*itPoints, true);
+         Shape->addPoint(*itPoints);
       }
    }
 

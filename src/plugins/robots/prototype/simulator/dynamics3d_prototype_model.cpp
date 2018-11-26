@@ -13,6 +13,8 @@
 #include <argos3/plugins/simulator/physics_engines/dynamics3d/dynamics3d_shape_manager.h>
 #include <argos3/plugins/simulator/physics_engines/dynamics3d/dynamics3d_engine.h>
 
+#include <argos3/plugins/simulator/physics_engines/dynamics3d/bullet/BulletCollision/CollisionShapes/btConvexPolyhedron.h>
+
 namespace argos {
 
    /****************************************/
@@ -24,8 +26,8 @@ namespace argos {
                              c_link_entity.GetExtents().GetY() * 0.5f);
       std::vector<btVector3> vecbtConvexhullPoints;
       std::vector<CVector3>::const_iterator itPoints;      
-      for(itPoints = std::begin(c_link_entity.GetConvexhullPoints());
-          itPoints != std::end(c_link_entity.GetConvexhullPoints());
+      for(itPoints = std::begin(c_link_entity.GetPolyhedronPoints());
+          itPoints != std::end(c_link_entity.GetPolyhedronPoints());
           ++itPoints) {
          vecbtConvexhullPoints.push_back(btVector3(itPoints->GetX(),
                                                    itPoints->GetZ(),
@@ -50,6 +52,32 @@ namespace argos {
          break;
       }
       return pcShape;
+   }
+
+   /****************************************/
+   /****************************************/
+
+   void CDynamics3DPrototypeModel::SetConvexPolyhedronFaces(CPrototypeLinkEntity& c_link_entity, std::shared_ptr<btCollisionShape>pc_Shape) {
+      std::shared_ptr<btConvexHullShape> pbtConvexhull = std::static_pointer_cast<btConvexHullShape>(pc_Shape);
+      pbtConvexhull->initializePolyhedralFeatures();
+      const btConvexPolyhedron* pbtConvexPolyhedron = pbtConvexhull->getConvexPolyhedron();
+      std::vector<CVector3> vecConvexhullPoints;
+      for (int i = 0; i < pbtConvexPolyhedron->m_vertices.size(); i++) {
+         vecConvexhullPoints.push_back(CVector3(pbtConvexPolyhedron->m_vertices[i].getX(),
+                                               -pbtConvexPolyhedron->m_vertices[i].getZ(),
+                                                pbtConvexPolyhedron->m_vertices[i].getY()));
+      }
+      c_link_entity.SetConvexhullPoints(vecConvexhullPoints);
+
+      std::vector<std::vector<int>> vecConvexhullFaces;
+      for (int i = 0; i < pbtConvexPolyhedron->m_faces.size(); i++) {
+         std::vector<int> SFace;
+         for (int j = 0; j < pbtConvexPolyhedron->m_faces[i].m_indices.size(); j++) {
+            SFace.push_back(pbtConvexPolyhedron->m_faces[i].m_indices[j]);
+         }
+         vecConvexhullFaces.push_back(SFace);
+      }
+      c_link_entity.SetConvexhullFaces(vecConvexhullFaces);
    }
 
    /****************************************/
@@ -95,6 +123,11 @@ namespace argos {
       CPrototypeLinkEntity& cBaseLink = c_entity.GetLinkEquippedEntity().GetReferenceLink();
       /* Get the collision shape */
       std::shared_ptr<btCollisionShape> ptrBaseLinkShape = RequestShape(cBaseLink);
+      /* Set faces data, if it is a convex hull*/
+      if (cBaseLink.GetGeometry() == CPrototypeLinkEntity::EGeometry::CONVEXHULL)
+      {
+         SetConvexPolyhedronFaces(cBaseLink, ptrBaseLinkShape);
+      }
       /* Set up the base link body */
       CBase* pcBase = 
          new CBase(*this,
@@ -136,6 +169,11 @@ namespace argos {
             /* Get the collision shape */
             std::shared_ptr<btCollisionShape> ptrChildLinkShape =
                RequestShape(cChildLink);
+            /* Set faces data, if it is a convex hull*/
+            if (cBaseLink.GetGeometry() == CPrototypeLinkEntity::EGeometry::CONVEXHULL)
+            {
+               SetConvexPolyhedronFaces(cBaseLink, ptrBaseLinkShape);
+            }
             /* Set up the child link body */
             CLink* pcChildLinkBody = 
                new CLink(*this,

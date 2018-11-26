@@ -149,7 +149,8 @@ namespace argos {
             break;
          case CPrototypeLinkEntity::EGeometry::CONVEXHULL:
             const std::vector<CVector3>& vecConvexhullPoints = pcLink->GetConvexhullPoints();
-            MakeConvexhull(vecConvexhullPoints);
+            const std::vector<std::vector<int>>vecConvexhullFaces= pcLink->GetConvexhullFaces();
+            MakeConvexhull(vecConvexhullPoints, vecConvexhullFaces);
             break;
          }
 //#ifndef NDEBUG
@@ -405,37 +406,27 @@ namespace argos {
    /****************************************/
    /****************************************/
 
-   void CQTOpenGLPrototype::MakeConvexhull(const std::vector<CVector3>& vec_convexhull_points) {
+   void CQTOpenGLPrototype::MakeConvexhull(const std::vector<CVector3>& vec_convexhull_points,
+                                           const std::vector<std::vector<int>> vec_convexhull_faces) {
       glEnable(GL_NORMALIZE);
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, SPECULAR);
       glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, SHININESS);
       glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, EMISSION);
 
-      std::vector<CVector3>::const_iterator itPoint;      
-      glBegin(GL_POLYGON);
-      for(itPoint = std::begin(vec_convexhull_points);
-          itPoint != std::end(vec_convexhull_points);
-          itPoint += 2) {
-         glVertex3f(itPoint->GetX(),itPoint->GetY(),itPoint->GetZ());
+      glBegin(GL_TRIANGLES);
+      for (unsigned int i = 0; i < vec_convexhull_faces.size(); i++) {
+         CVector3 v1 = vec_convexhull_points[vec_convexhull_faces[i][0]];
+         for (unsigned int j = 0; j < vec_convexhull_faces[i].size() - 2; j++) {
+            CVector3 v2 = vec_convexhull_points[vec_convexhull_faces[i][j+1]];
+            CVector3 v3 = vec_convexhull_points[vec_convexhull_faces[i][j+2]];
+            CVector3 normal = (v3 - v1).CrossProduct(v2 - v1);
+            glNormal3f(normal.GetX(), normal.GetY(), normal.GetZ());
+            glVertex3f(v1.GetX(), v1.GetY(), v1.GetZ());
+            glVertex3f(v2.GetX(), v2.GetY(), v2.GetZ());
+            glVertex3f(v3.GetX(), v3.GetY(), v3.GetZ());
+         }
       }
       glEnd();
-      glBegin(GL_POLYGON);
-      for(itPoint = std::end(vec_convexhull_points);
-          itPoint != std::begin(vec_convexhull_points);
-          itPoint -= 2) {
-         glVertex3f((itPoint-1)->GetX(),(itPoint-1)->GetY(),(itPoint-1)->GetZ());
-      }
-      glEnd();
-      for(itPoint = std::begin(vec_convexhull_points);
-          itPoint != std::end(vec_convexhull_points);
-          itPoint += 2) {
-         glBegin(GL_POLYGON);
-            glVertex3f(itPoint->GetX(),itPoint->GetY(),itPoint->GetZ());
-            glVertex3f((itPoint+1)->GetX(),(itPoint+1)->GetY(),(itPoint+1)->GetZ());
-            glVertex3f((itPoint+3)->GetX(),(itPoint+3)->GetY(),(itPoint+3)->GetZ());
-            glVertex3f((itPoint+2)->GetX(),(itPoint+2)->GetY(),(itPoint+2)->GetZ());
-         glEnd();
-      }
 
       glDisable(GL_NORMALIZE);    
    }
