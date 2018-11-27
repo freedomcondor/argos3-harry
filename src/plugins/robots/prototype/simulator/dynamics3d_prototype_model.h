@@ -43,8 +43,6 @@ namespace argos {
 
       std::shared_ptr<btCollisionShape> RequestShape(const CPrototypeLinkEntity& c_link_entity);
 
-      void SetConvexPolyhedronFaces(CPrototypeLinkEntity& c_link_entity, std::shared_ptr<btCollisionShape>pc_Shape);
-
    private:
 
       CPrototypeEntity& m_cEntity;

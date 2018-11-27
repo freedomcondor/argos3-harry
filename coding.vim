@@ -19,3 +19,6 @@ vsp src/plugins/robots/prototype/simulator/dynamics3d_prototype_model.cpp
 
 tabnew src/plugins/robots/prototype/simulator/qtopengl_prototype.h
 vsp src/plugins/robots/prototype/simulator/qtopengl_prototype.cpp
+
+tabnew src/core/utility/math/convex_hull.h
+vsp src/core/utility/math/convex_hull.cpp

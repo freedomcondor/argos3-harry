@@ -14,6 +14,7 @@ namespace argos {
 }
 
 #include <vector>
+#include <argos3/core/utility/math/vector3.h> // for UInt32
 
 #ifdef __APPLE__
 #include <gl.h>
@@ -46,7 +47,7 @@ namespace argos {
       void MakeTagTexture();
 
       void MakeConvexhull(const std::vector<CVector3>& vec_convexhull_points,
-                          const std::vector<std::vector<int>> vec_convexhull_faces);
+                          const std::vector<std::vector<UInt32>> vec_convexhull_faces);
 
    private:
 
@@ -54,7 +55,6 @@ namespace argos {
       GLuint m_unBoxList;
       GLuint m_unCylinderList;
       GLuint m_unSphereList;
-      GLuint m_unConvexhullList;
       GLuint m_unLEDList;
       GLuint m_unPoleList;
       GLuint m_unTagList;

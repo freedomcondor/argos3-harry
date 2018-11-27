@@ -57,23 +57,11 @@ namespace argos {
          return m_cExtents;
       }
 
-      const std::vector<CVector3>& GetPolyhedronPoints() const {
-         return m_vecPolyhedronPoints;
-      }
-
-      void SetConvexhullPoints(const std::vector<CVector3>& vec_convexhull_points) {
-         m_vecConvexhullPoints = vec_convexhull_points;
-      }
-
       const std::vector<CVector3>& GetConvexhullPoints() const {
          return m_vecConvexhullPoints;
       }
 
-      void SetConvexhullFaces(const std::vector<std::vector<int>>& vec_convexhull_faces) {
-         m_vecConvexhullFaces = vec_convexhull_faces;
-      }
-
-      const std::vector<std::vector<int>>& GetConvexhullFaces() const {
+      const std::vector<std::vector<UInt32>>& GetConvexhullFaces() const {
          return m_vecConvexhullFaces;
       }
 
@@ -93,11 +81,11 @@ namespace argos {
 
 		EGeometry m_eGeometry;
 		CVector3 m_cExtents;
-      std::vector<CVector3> m_vecPolyhedronPoints;
-      std::vector<CVector3> m_vecConvexhullPoints;
-      std::vector<std::vector<int>> m_vecConvexhullFaces;
 		Real m_fMass;
       SAnchor* m_psAnchor;
+
+      std::vector<CVector3> m_vecConvexhullPoints;
+      std::vector<std::vector<UInt32>> m_vecConvexhullFaces;
    };
 
 }

@@ -9,6 +9,8 @@
 #include <argos3/core/simulator/entity/composable_entity.h>
 #include <argos3/plugins/robots/prototype/simulator/prototype_entity.h>
 
+#include <argos3/core/utility/math/convex_hull.h>
+
 namespace argos {
 
    /****************************************/
@@ -55,8 +57,10 @@ namespace argos {
                 ++itLink) {
                CVector3 cPointPosition;
                GetNodeAttribute(*itLink, "position", cPointPosition);
-               m_vecPolyhedronPoints.push_back(cPointPosition);
+               m_vecConvexhullPoints.push_back(cPointPosition);
             }
+            m_vecConvexhullFaces = CConvexHull(m_vecConvexhullPoints).GetFaces();
+            /* TODO: test if it is a valid convex hull use GetFaceNumber*/
          } else {
             /* unknown geometry requested */
             THROW_ARGOSEXCEPTION("Geometry \"" << strLinkGeometry << "\" is not implemented");

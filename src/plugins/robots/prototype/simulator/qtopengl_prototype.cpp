@@ -149,7 +149,7 @@ namespace argos {
             break;
          case CPrototypeLinkEntity::EGeometry::CONVEXHULL:
             const std::vector<CVector3>& vecConvexhullPoints = pcLink->GetConvexhullPoints();
-            const std::vector<std::vector<int>>vecConvexhullFaces= pcLink->GetConvexhullFaces();
+            const std::vector<std::vector<UInt32>>vecConvexhullFaces= pcLink->GetConvexhullFaces();
             MakeConvexhull(vecConvexhullPoints, vecConvexhullFaces);
             break;
          }
@@ -407,16 +407,16 @@ namespace argos {
    /****************************************/
 
    void CQTOpenGLPrototype::MakeConvexhull(const std::vector<CVector3>& vec_convexhull_points,
-                                           const std::vector<std::vector<int>> vec_convexhull_faces) {
+                                           const std::vector<std::vector<UInt32>> vec_convexhull_faces) {
       glEnable(GL_NORMALIZE);
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, SPECULAR);
       glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, SHININESS);
       glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, EMISSION);
 
       glBegin(GL_TRIANGLES);
-      for (unsigned int i = 0; i < vec_convexhull_faces.size(); i++) {
+      for (UInt32 i = 0; i < vec_convexhull_faces.size(); i++) {
          CVector3 v1 = vec_convexhull_points[vec_convexhull_faces[i][0]];
-         for (unsigned int j = 0; j < vec_convexhull_faces[i].size() - 2; j++) {
+         for (UInt32 j = 0; j < vec_convexhull_faces[i].size() - 2; j++) {
             CVector3 v2 = vec_convexhull_points[vec_convexhull_faces[i][j+1]];
             CVector3 v3 = vec_convexhull_points[vec_convexhull_faces[i][j+2]];
             CVector3 normal = (v3 - v1).CrossProduct(v2 - v1);
