@@ -75,10 +75,26 @@ namespace argos {
                   UInt32 unIdxC = 3 - unIdxA - unIdxB;
                   if (m_vecEdge[sFace.P[unIdxA]][sFace.P[unIdxB]].Size() == 2) 
                      continue;
-                  m_vecFaces.push_back(MakeFace(sFace.P[unIdxA], 
+                  Face sNewFace = MakeFace(sFace.P[unIdxA], 
+                  //m_vecFaces.push_back(MakeFace(sFace.P[unIdxA], 
                                                 sFace.P[unIdxB],
                                                 unIdxPoint,
-                                                sFace.P[unIdxC]));
+                                                sFace.P[unIdxC]);
+                  if ((((unIdxB - unIdxA + 3) % 3 == 0) &&
+                       (sNewFace.P[2] != sFace.P[unIdxB]))
+                      ||
+                      (((unIdxA - unIdxB + 3) % 3 == 0) &&
+                       (sNewFace.P[1] != sFace.P[unIdxB]))
+                     )
+                  {
+                     sNewFace.Normal = -sNewFace.Normal;
+                     sNewFace.Direction = -sNewFace.Direction;
+                     UInt32 unTemp = sNewFace.P[1];
+                     sNewFace.P[1] = sNewFace.P[2];
+                     sNewFace.P[2] = unTemp;
+                  }
+                  m_vecFaces.push_back(sNewFace);
+                  /* TODO: verify direction */
                }
             }
          }
@@ -99,11 +115,12 @@ namespace argos {
    /****************************************/
 
    std::vector<UInt32> CConvexHull::FindFirst4Points() {
+      /* TODO */
       std::vector<UInt32> temp;
       temp.push_back(0);
       temp.push_back(1);
       temp.push_back(2);
-      temp.push_back(3);
+      temp.push_back(4);
       return temp;
    }
 
