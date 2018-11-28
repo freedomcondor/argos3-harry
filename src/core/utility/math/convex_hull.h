@@ -16,13 +16,18 @@ namespace argos {
 namespace argos {
 
 /*
- *  class CConvexHull provides a base implementation of a convex hull, 
- *      it takes a vector of CVector3 as input,
- *      member function ComputeConvexHull() calculates the faces of the convex hull of these points
- *      faces is a vector of face,
- *      where a face is a vector of UInt32s as the indices of the points.
+ * class CConvexHull provides a base implementation of a convex hull, 
+ *    It takes a std::vector of CVector3 as input, 
+ *       which means the point cloud to be made into a convexhull
+ *    Member function ComputeConvexHull() calculates the faces of the convex hull of these points
+ *    A face is a vector of UInt32s, each UInt32 is a index to the points.
+ *    Each face is made of three points, 
+ *       in a couter-clockwise order looking from outside of the hull
  *
- *  compute convexhull code based on https://gist.github.com/msg555/4963794
+ * compute convexhull algorithm is increment convexhull algorithm
+ *    http://instructor3.algorithmdesign.net/ppt/pdf1/IncrementalHull.pdf
+ * code modified based on 
+ *    https://gist.github.com/msg555/4963794
  */
 
    class CConvexHull{
@@ -46,9 +51,8 @@ namespace argos {
       void ComputeConvexHull();
       std::vector<UInt32> FindFirst4Points();
 
-      /* m_Edge[i][j] indicates: with which point that Point i,j, and m_Edge[i][j] make a face
-       * all the faces are triangles so length of A can be 2 maximum
-       * it has a meaning only when i < j 
+      /* m_Edge[i][j] indicates: with which point that Point i,j, and m_Edge[i][j].P make a face
+       * all the faces are triangles so length of P can be 2 maximum (two faces for a edge)
        * */
       struct Edge {
          void Insert (UInt32 X) { P.push_back(X); }
@@ -63,6 +67,7 @@ namespace argos {
       };
       std::vector<std::vector<Edge>> m_vecEdge;
 
+      /* a face has three points, couter-clockwise order looking from outside */
       struct Face {
          CVector3 Normal;
          Real Direction;

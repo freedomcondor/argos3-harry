@@ -79,9 +79,9 @@ namespace argos {
 
    private:
 
-		EGeometry m_eGeometry;
-		CVector3 m_cExtents;
-		Real m_fMass;
+      EGeometry m_eGeometry;
+      CVector3 m_cExtents;
+      Real m_fMass;
       SAnchor* m_psAnchor;
 
       std::vector<CVector3> m_vecConvexhullPoints;

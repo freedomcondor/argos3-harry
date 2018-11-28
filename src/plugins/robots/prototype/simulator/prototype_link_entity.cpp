@@ -60,7 +60,7 @@ namespace argos {
                m_vecConvexhullPoints.push_back(cPointPosition);
             }
             m_vecConvexhullFaces = CConvexHull(m_vecConvexhullPoints).GetFaces();
-            /* TODO: test if it is a valid convex hull use GetFaceNumber*/
+            /* TODO: test if it is a valid convex hull with GetFaceNumber == 0*/
          } else {
             /* unknown geometry requested */
             THROW_ARGOSEXCEPTION("Geometry \"" << strLinkGeometry << "\" is not implemented");

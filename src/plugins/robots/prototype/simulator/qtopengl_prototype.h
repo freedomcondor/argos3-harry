@@ -14,7 +14,7 @@ namespace argos {
 }
 
 #include <vector>
-#include <argos3/core/utility/math/vector3.h> // for UInt32
+#include <argos3/core/utility/datatypes/datatypes.h> // for UInt32
 
 #ifdef __APPLE__
 #include <gl.h>

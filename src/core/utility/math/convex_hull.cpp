@@ -54,7 +54,6 @@ namespace argos {
 
          /* find all the faces with the focal point at its outside, and delete it*/
          for (UInt32 unIdxFace = 0; unIdxFace < m_vecFaces.size(); unIdxFace++) {
-         //for (Face sFace : m_vecFaces) {
             Face sFace = m_vecFaces[unIdxFace];
             if (sFace.Normal.DotProduct(m_vecPoints[unIdxPoint]) > sFace.Direction) {
                m_vecEdge[sFace.P[0]][sFace.P[1]].Erase(sFace.P[2]);
@@ -79,18 +78,15 @@ namespace argos {
             for (UInt32 unIdxA = 0; unIdxA < 3; unIdxA++) {
                for (UInt32 unIdxB = unIdxA + 1; unIdxB < 3; unIdxB++) {
                   UInt32 unIdxC = 3 - unIdxA - unIdxB;
-                  if (   (sFace.P[unIdxA] < sFace.P[unIdxB]) &&
-                       (m_vecEdge[sFace.P[unIdxA]][sFace.P[unIdxB]].Size() == 2) )
-                     continue;
-                  if (   (sFace.P[unIdxA] > sFace.P[unIdxB] ) &&
-                       (m_vecEdge[sFace.P[unIdxB]][sFace.P[unIdxA]].Size() == 2) )
+                  if (m_vecEdge[sFace.P[unIdxA]][sFace.P[unIdxB]].Size() == 2)
                      continue;
                   Face sNewFace = MakeFace(sFace.P[unIdxA], 
-                  //m_vecFaces.push_back(MakeFace(sFace.P[unIdxA], 
-                                                sFace.P[unIdxB],
-                                                unIdxPoint,
-                                                sFace.P[unIdxC]);
-                  /* verify direction */
+                                           sFace.P[unIdxB],
+                                           unIdxPoint,
+                                           sFace.P[unIdxC]);
+                  /* verify direction, the direction should be consistent with unIdxFace
+                   * the right direction is told by the order of unIdxA and unIdxB
+                   * */
                   if ((((unIdxB - unIdxA + 3) % 3 == 1) &&
                        (sNewFace.P[2] != sFace.P[unIdxB]))
                       ||
@@ -125,32 +121,31 @@ namespace argos {
    /****************************************/
 
    std::vector<UInt32> CConvexHull::FindFirst4Points() {
-      std::vector<UInt32> temp;
-      for (UInt32 unI = 0; unI < m_vecPoints.size(); unI++)
-         for (UInt32 unJ = unI + 1; unJ < m_vecPoints.size(); unJ++)
-            for (UInt32 unK = unJ + 1; unK < m_vecPoints.size(); unK++)
+      std::vector<UInt32> vecFirst4Points;
+      for (UInt32 unI = 0; unI < m_vecPoints.size(); unI++) {
+         for (UInt32 unJ = unI + 1; unJ < m_vecPoints.size(); unJ++) {
+            for (UInt32 unK = unJ + 1; unK < m_vecPoints.size(); unK++) {
                for (UInt32 unL = unK + 1; unL < m_vecPoints.size(); unL++) {
                   CVector3 cNormal = (m_vecPoints[unI] - m_vecPoints[unJ]).CrossProduct(
                                       m_vecPoints[unI] - m_vecPoints[unK]);
-                  //if (cNormal.Length() < 0.000001)
-                  if (cNormal.Length() == 0)
+                  Real ZERO = 0.000000001;
+                  if (cNormal.Length() < ZERO)
+                  /* if (cNormal.Length() == 0) */
                      continue;
-                  //if (cNormal.DotProduct(m_vecPoints[unL] - m_vecPoints[unI]) < 0.00000001)
-                  if (cNormal.DotProduct(m_vecPoints[unL] - m_vecPoints[unI]) == 0)
+                  if ((cNormal.DotProduct(m_vecPoints[unL] - m_vecPoints[unI]) < ZERO) &&
+                      (cNormal.DotProduct(m_vecPoints[unL] - m_vecPoints[unI]) > -ZERO))
+                  /* if (cNormal.DotProduct(m_vecPoints[unL] - m_vecPoints[unI]) == 0) */
                      continue;
-                  temp.push_back(unI);
-                  temp.push_back(unJ);
-                  temp.push_back(unK);
-                  temp.push_back(unL);
-                  return temp;
+                  vecFirst4Points.push_back(unI);
+                  vecFirst4Points.push_back(unJ);
+                  vecFirst4Points.push_back(unK);
+                  vecFirst4Points.push_back(unL);
+                  return vecFirst4Points;
                }
-                  /*
-                  temp.push_back(0);
-                  temp.push_back(1);
-                  temp.push_back(2);
-                  temp.push_back(4);
-                  */
-      return temp;
+            }
+         }
+      }
+      return vecFirst4Points;
    }
 
    /****************************************/

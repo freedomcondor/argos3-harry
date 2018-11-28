@@ -148,9 +148,11 @@ namespace argos {
             glCallList(m_unSphereList);
             break;
          case CPrototypeLinkEntity::EGeometry::CONVEXHULL:
-            const std::vector<CVector3>& vecConvexhullPoints = pcLink->GetConvexhullPoints();
-            const std::vector<std::vector<UInt32>>vecConvexhullFaces= pcLink->GetConvexhullFaces();
-            MakeConvexhull(vecConvexhullPoints, vecConvexhullFaces);
+            //const std::vector<CVector3>& vecConvexhullPoints = pcLink->GetConvexhullPoints();
+            //const std::vector<std::vector<UInt32>>vecConvexhullFaces= pcLink->GetConvexhullFaces();
+            //MakeConvexhull(vecConvexhullPoints, vecConvexhullFaces);
+            MakeConvexhull(pcLink->GetConvexhullPoints(),
+                           pcLink->GetConvexhullFaces() );
             break;
          }
 //#ifndef NDEBUG
