@@ -31,13 +31,13 @@
     <!-- * Autonomous Robot Definition * -->
     <!-- ******************************* -->
 
-    <distribute>
+    <!--distribute>
       <position method="uniform" min="-0.15,-0.15,0.03" max="0.15,0.15,0.9" />
       <orientation method="uniform" min="0,0,0" max="360,360,360" />
       <entity quantity="200" max_trials="100" base_num="1000">
         <box id="b0" size="0.01,0.01,0.01" movable="true" mass="0.05"/>
       </entity>
-    </distribute>
+    </distribute-->
 
     <prototype id="prototype1" movable="true">
       <body position="0,0,0.4" orientation="0,0,0" />
@@ -47,6 +47,11 @@
       </links>
     </prototype>
 
+    <distribute>
+      <position method="uniform" min="-0.15,-0.15,0.03" max="0.15,0.15,0.9" />
+      <orientation method="uniform" min="0,0,0" max="360,360,360" />
+      <entity quantity="20" max_trials="100" base_num="1000">
+
     <prototype id="prototype0" movable="true">
       <body position="0,0,0.02" orientation="0,0,0" />
       <links ref="convex0">
@@ -54,7 +59,8 @@
               position="0,0,0"/-->
         <link id="convex0" geometry="convexhull" mass="0.05"
               position="0,0,0">
-              <point position=" 0.04,  0.02,  0.02"/>
+
+              <!--point position=" 0.04,  0.02,  0.02"/>
               <point position=" 0.04,  0.02, -0.02"/>
 
               <point position=" 0.02,  0.04,  0.02"/>
@@ -76,7 +82,35 @@
               <point position=" 0.02, -0.04, -0.02"/>
 
               <point position=" 0.04, -0.02,  0.02"/>
-              <point position=" 0.04, -0.02, -0.02"/>
+              <point position=" 0.04, -0.02, -0.02"/ -->
+
+              <point position=" 0.00,  0.00,  0.02"/>
+
+              <point position=" 0.02,  0.01,  0.01"/>
+              <point position=" 0.02,  0.01,  0.00"/>
+              <point position=" 0.02,  0.01, -0.01"/>
+
+              <point position=" 0.01,  0.02,  0.01"/>
+              <point position=" 0.01,  0.02, -0.01"/>
+
+              <point position="-0.01,  0.02,  0.01"/>
+              <point position="-0.01,  0.02, -0.01"/>
+
+              <point position="-0.02,  0.01,  0.01"/>
+              <point position="-0.02,  0.01, -0.01"/>
+
+              <point position="-0.02, -0.01,  0.01"/>
+              <point position="-0.02, -0.01, -0.01"/>
+
+              <point position="-0.01, -0.02,  0.01"/>
+              <point position="-0.01, -0.02, -0.01"/>
+
+              <point position=" 0.01, -0.02,  0.01"/>
+              <point position=" 0.01, -0.02, -0.01"/>
+
+              <point position=" 0.02, -0.01,  0.01"/>
+              <point position=" 0.02, -0.01, -0.01"/>
+
 
         </link>
         <!--link id="convex0" geometry="convexhull" mass="0.070"
@@ -101,6 +135,10 @@
         </joint>
       </joints-->
     </prototype>
+
+      </entity>
+    </distribute>
+
   </arena>
 
   <!-- ******************* -->

@@ -58,10 +58,16 @@ namespace argos {
             Face sFace = m_vecFaces[unIdxFace];
             if (sFace.Normal.DotProduct(m_vecPoints[unIdxPoint]) > sFace.Direction) {
                m_vecEdge[sFace.P[0]][sFace.P[1]].Erase(sFace.P[2]);
+               m_vecEdge[sFace.P[1]][sFace.P[0]].Erase(sFace.P[2]);
                m_vecEdge[sFace.P[0]][sFace.P[2]].Erase(sFace.P[1]);
+               m_vecEdge[sFace.P[2]][sFace.P[0]].Erase(sFace.P[1]);
                m_vecEdge[sFace.P[1]][sFace.P[2]].Erase(sFace.P[0]);
-               m_vecFaces[unIdxFace--] = m_vecFaces.back();
-               m_vecFaces.resize(m_vecFaces.size() - 1);
+               m_vecEdge[sFace.P[2]][sFace.P[1]].Erase(sFace.P[0]);
+               //m_vecFaces[unIdxFace--] = m_vecFaces.back();
+               //m_vecFaces.resize(m_vecFaces.size() - 1);
+               m_vecFaces[unIdxFace] = m_vecFaces.back();
+               m_vecFaces.erase(m_vecFaces.end());
+               unIdxFace--;
             }
          }
 
@@ -73,17 +79,22 @@ namespace argos {
             for (UInt32 unIdxA = 0; unIdxA < 3; unIdxA++) {
                for (UInt32 unIdxB = unIdxA + 1; unIdxB < 3; unIdxB++) {
                   UInt32 unIdxC = 3 - unIdxA - unIdxB;
-                  if (m_vecEdge[sFace.P[unIdxA]][sFace.P[unIdxB]].Size() == 2) 
+                  if (   (sFace.P[unIdxA] < sFace.P[unIdxB]) &&
+                       (m_vecEdge[sFace.P[unIdxA]][sFace.P[unIdxB]].Size() == 2) )
+                     continue;
+                  if (   (sFace.P[unIdxA] > sFace.P[unIdxB] ) &&
+                       (m_vecEdge[sFace.P[unIdxB]][sFace.P[unIdxA]].Size() == 2) )
                      continue;
                   Face sNewFace = MakeFace(sFace.P[unIdxA], 
                   //m_vecFaces.push_back(MakeFace(sFace.P[unIdxA], 
                                                 sFace.P[unIdxB],
                                                 unIdxPoint,
                                                 sFace.P[unIdxC]);
-                  if ((((unIdxB - unIdxA + 3) % 3 == 0) &&
+                  /* verify direction */
+                  if ((((unIdxB - unIdxA + 3) % 3 == 1) &&
                        (sNewFace.P[2] != sFace.P[unIdxB]))
                       ||
-                      (((unIdxA - unIdxB + 3) % 3 == 0) &&
+                      (((unIdxA - unIdxB + 3) % 3 == 1) &&
                        (sNewFace.P[1] != sFace.P[unIdxB]))
                      )
                   {
@@ -94,7 +105,6 @@ namespace argos {
                      sNewFace.P[2] = unTemp;
                   }
                   m_vecFaces.push_back(sNewFace);
-                  /* TODO: verify direction */
                }
             }
          }
@@ -115,12 +125,31 @@ namespace argos {
    /****************************************/
 
    std::vector<UInt32> CConvexHull::FindFirst4Points() {
-      /* TODO */
       std::vector<UInt32> temp;
-      temp.push_back(0);
-      temp.push_back(1);
-      temp.push_back(2);
-      temp.push_back(4);
+      for (UInt32 unI = 0; unI < m_vecPoints.size(); unI++)
+         for (UInt32 unJ = unI + 1; unJ < m_vecPoints.size(); unJ++)
+            for (UInt32 unK = unJ + 1; unK < m_vecPoints.size(); unK++)
+               for (UInt32 unL = unK + 1; unL < m_vecPoints.size(); unL++) {
+                  CVector3 cNormal = (m_vecPoints[unI] - m_vecPoints[unJ]).CrossProduct(
+                                      m_vecPoints[unI] - m_vecPoints[unK]);
+                  //if (cNormal.Length() < 0.000001)
+                  if (cNormal.Length() == 0)
+                     continue;
+                  //if (cNormal.DotProduct(m_vecPoints[unL] - m_vecPoints[unI]) < 0.00000001)
+                  if (cNormal.DotProduct(m_vecPoints[unL] - m_vecPoints[unI]) == 0)
+                     continue;
+                  temp.push_back(unI);
+                  temp.push_back(unJ);
+                  temp.push_back(unK);
+                  temp.push_back(unL);
+                  return temp;
+               }
+                  /*
+                  temp.push_back(0);
+                  temp.push_back(1);
+                  temp.push_back(2);
+                  temp.push_back(4);
+                  */
       return temp;
    }
 
@@ -129,8 +158,11 @@ namespace argos {
 
    CConvexHull::Face CConvexHull::MakeFace(UInt32 A, UInt32 B, UInt32 C, UInt32 un_inside_point) {
       m_vecEdge[A][B].Insert(C);
+      m_vecEdge[B][A].Insert(C);
       m_vecEdge[A][C].Insert(B);
+      m_vecEdge[C][A].Insert(B);
       m_vecEdge[B][C].Insert(A);
+      m_vecEdge[C][B].Insert(A);
 
       Face sFace;
       sFace.P[0] = A; sFace.P[1] = B; sFace.P[2] = C;
