@@ -23,6 +23,7 @@ namespace argos {
  *    A face is a vector of UInt32s, each UInt32 is a index to the points.
  *    Each face is made of three points, 
  *       in a couter-clockwise order looking from outside of the hull
+ *    TODO: make it support more than 3 points for a face
  *
  * compute convexhull algorithm is increment convexhull algorithm
  *    http://instructor3.algorithmdesign.net/ppt/pdf1/IncrementalHull.pdf
@@ -55,14 +56,18 @@ namespace argos {
        * all the faces are triangles so length of P can be 2 maximum (two faces for a edge)
        * */
       struct Edge {
-         void Insert (UInt32 X) { P.push_back(X); }
+         void Insert (UInt32 X) { 
+            P.push_back(X); 
+         }
          void Erase (UInt32 X) { 
             if ((P.size() >= 1) && (P[0] == X))
                P.erase(P.begin());
             else if ((P.size() >= 2) && (P[1] == X))
                P.erase(P.begin()+1);
          }
-         UInt32 Size() { return P.size(); }
+         UInt32 Size() { 
+            return P.size(); 
+         }
          std::vector<UInt32> P;
       };
       std::vector<std::vector<Edge>> m_vecEdge;
@@ -74,7 +79,7 @@ namespace argos {
          UInt32 P[3];
       };
       std::vector<Face> m_vecFaces;
-      Face MakeFace(UInt32 A, UInt32 B, UInt32 C, UInt32 un_inside_point);
+      Face MakeFace(UInt32 un_A, UInt32 un_B, UInt32 un_C, UInt32 un_inside_point);
 
    private:
       std::vector<CVector3> m_vecPoints;

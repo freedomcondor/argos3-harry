@@ -13,7 +13,7 @@ namespace argos {
    class CVector3;
 }
 
-#include <vector>
+#include <vector>  // for std::vector
 #include <argos3/core/utility/datatypes/datatypes.h> // for UInt32
 
 #ifdef __APPLE__
@@ -45,7 +45,6 @@ namespace argos {
       void MakePoles();
       void MakeTag();
       void MakeTagTexture();
-
       void MakeConvexhull(const std::vector<CVector3>& vec_convexhull_points,
                           const std::vector<std::vector<UInt32>> vec_convexhull_faces);
 

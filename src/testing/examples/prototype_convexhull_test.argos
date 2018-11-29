@@ -39,12 +39,38 @@
       </entity>
     </distribute-->
 
-    <prototype id="prototype1" movable="true">
+    <prototype id="prototype0" movable="true">
       <body position="0,0,0.4" orientation="0,0,0" />
       <links ref="box0">
         <link id="box0" geometry="box" size="0.08,0.05,0.03" mass="0.050"
               position="0,0,0"/>
+        <link id="convex0" geometry="convexhull" mass="0.05"
+              position="0.04,0,0.015" orientation="0,90,0">
+              <point position=" 0.015,  0.025,  0.00"/>
+              <point position=" 0.015, -0.025,  0.00"/>
+              <point position="-0.015,  0.025,  0.00"/>
+              <point position="-0.015, -0.025,  0.00"/>
+              <point position=" 0.00,  0.00,  0.1"/>
+        </link>
+        <link id="convex1" geometry="convexhull" mass="0.05"
+              position="-0.03,0,0.0" orientation="0,180,0">
+              <point position=" 0.01,  0.025,  0.00"/>
+              <point position=" 0.01, -0.025,  0.00"/>
+              <point position="-0.01,  0.025,  0.00"/>
+              <point position="-0.01, -0.025,  0.00"/>
+              <point position=" 0.00,  0.00,  0.02"/>
+        </link>
       </links>
+      <joints>
+         <joint type="fixed" axis="0,0,1" id="box0andconvex0">
+           <parent link="box0" position="0.04, 0.0, 0.015" orientation="0,0,0"/>
+           <child link="convex0" position="0.0, 0.0, 0" orientation="0,-90,0"/>
+         </joint>
+         <joint type="fixed" axis="0,0,1" id="box0andconvex1">
+           <parent link="box0" position="-0.03, 0.0, 0.00" orientation="0,0,0"/>
+           <child link="convex1" position="0.0, 0.0, 0" orientation="0,-180,0"/>
+         </joint>
+      </joints>
     </prototype>
 
     <distribute>
@@ -52,89 +78,41 @@
       <orientation method="uniform" min="0,0,0" max="360,360,360" />
       <entity quantity="20" max_trials="100" base_num="1000">
 
-    <prototype id="prototype0" movable="true">
-      <body position="0,0,0.02" orientation="0,0,0" />
-      <links ref="convex0">
-        <!--link id="box0" geometry="box" size="0.08,0.05,0.03" mass="0.050"
-              position="0,0,0"/-->
-        <link id="convex0" geometry="convexhull" mass="0.05"
-              position="0,0,0">
+        <prototype id="prototype1" movable="true">
+          <body position="0,0,0.02" orientation="0,0,0" />
+          <links ref="convex0">
+            <link id="convex0" geometry="convexhull" mass="0.05"
+                   position="0,0,0">
 
-              <!--point position=" 0.04,  0.02,  0.02"/>
-              <point position=" 0.04,  0.02, -0.02"/>
+              <point position=" 0.00,  0.00,  0.04"/>
 
-              <point position=" 0.02,  0.04,  0.02"/>
-              <point position=" 0.02,  0.04, -0.02"/>
-
-              <point position="-0.02,  0.04,  0.02"/>
-              <point position="-0.02,  0.04, -0.02"/>
-
-              <point position="-0.04,  0.02,  0.02"/>
-              <point position="-0.04,  0.02, -0.02"/>
-
-              <point position="-0.04, -0.02,  0.02"/>
-              <point position="-0.04, -0.02, -0.02"/>
-
-              <point position="-0.02, -0.04,  0.02"/>
-              <point position="-0.02, -0.04, -0.02"/>
-
-              <point position=" 0.02, -0.04,  0.02"/>
-              <point position=" 0.02, -0.04, -0.02"/>
-
-              <point position=" 0.04, -0.02,  0.02"/>
-              <point position=" 0.04, -0.02, -0.02"/ -->
-
-              <point position=" 0.00,  0.00,  0.02"/>
-
-              <point position=" 0.02,  0.01,  0.01"/>
+              <point position=" 0.02,  0.01,  0.03"/>
               <point position=" 0.02,  0.01,  0.00"/>
-              <point position=" 0.02,  0.01, -0.01"/>
+              <point position=" 0.02,  0.01,  0.01"/>
 
+              <point position=" 0.01,  0.02,  0.03"/>
               <point position=" 0.01,  0.02,  0.01"/>
-              <point position=" 0.01,  0.02, -0.01"/>
 
+              <point position="-0.01,  0.02,  0.03"/>
               <point position="-0.01,  0.02,  0.01"/>
-              <point position="-0.01,  0.02, -0.01"/>
 
+              <point position="-0.02,  0.01,  0.03"/>
               <point position="-0.02,  0.01,  0.01"/>
-              <point position="-0.02,  0.01, -0.01"/>
 
+              <point position="-0.02, -0.01,  0.03"/>
               <point position="-0.02, -0.01,  0.01"/>
-              <point position="-0.02, -0.01, -0.01"/>
 
+              <point position="-0.01, -0.02,  0.03"/>
               <point position="-0.01, -0.02,  0.01"/>
-              <point position="-0.01, -0.02, -0.01"/>
 
+              <point position=" 0.01, -0.02,  0.03"/>
               <point position=" 0.01, -0.02,  0.01"/>
-              <point position=" 0.01, -0.02, -0.01"/>
 
+              <point position=" 0.02, -0.01,  0.03"/>
               <point position=" 0.02, -0.01,  0.01"/>
-              <point position=" 0.02, -0.01, -0.01"/>
-
-
-        </link>
-        <!--link id="convex0" geometry="convexhull" mass="0.070"
-              position="0,0,0">
-              <point position=" 0.1,  0.1,  0.1"/>
-              <point position=" 0.1,  0.1, -0.1"/>
-
-              <point position=" 0.1, -0.1,  0.1"/>
-              <point position=" 0.1, -0.1, -0.1"/>
-
-              <point position="-0.1, -0.1,  0.1"/>
-              <point position="-0.1, -0.1, -0.1"/>
-
-              <point position="-0.1,  0.1,  0.1"/>
-              <point position="-0.1,  0.1, -0.1"/>
-        </link-->
-      </links>
-      <!--joints>
-        <joint type="fixed" axis="0,0,1" id="box0andbox1">
-          <parent link="box0" position="0.0, 0.0, 0.0" orientation="0,0,0"/>
-          <child link="convex0" position="-0.3,0,0" orientation="0,0,0"/>
-        </joint>
-      </joints-->
-    </prototype>
+            </link>
+          </links>
+        </prototype>
 
       </entity>
     </distribute>

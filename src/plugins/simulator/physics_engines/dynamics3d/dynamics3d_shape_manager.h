@@ -71,6 +71,7 @@ namespace argos {
       };
       static std::vector<SConvexhullResource> m_vecConvexhullResources;
    };
+
 }
 
 #endif

@@ -148,11 +148,8 @@ namespace argos {
             glCallList(m_unSphereList);
             break;
          case CPrototypeLinkEntity::EGeometry::CONVEXHULL:
-            //const std::vector<CVector3>& vecConvexhullPoints = pcLink->GetConvexhullPoints();
-            //const std::vector<std::vector<UInt32>>vecConvexhullFaces= pcLink->GetConvexhullFaces();
-            //MakeConvexhull(vecConvexhullPoints, vecConvexhullFaces);
             MakeConvexhull(pcLink->GetConvexhullPoints(),
-                           pcLink->GetConvexhullFaces() );
+                           pcLink->GetConvexhullFaces());
             break;
          }
 //#ifndef NDEBUG
@@ -416,16 +413,16 @@ namespace argos {
       glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, EMISSION);
 
       glBegin(GL_TRIANGLES);
-      for (UInt32 i = 0; i < vec_convexhull_faces.size(); i++) {
-         CVector3 v1 = vec_convexhull_points[vec_convexhull_faces[i][0]];
-         for (UInt32 j = 0; j < vec_convexhull_faces[i].size() - 2; j++) {
-            CVector3 v2 = vec_convexhull_points[vec_convexhull_faces[i][j+1]];
-            CVector3 v3 = vec_convexhull_points[vec_convexhull_faces[i][j+2]];
-            CVector3 normal = (v3 - v1).CrossProduct(v2 - v1);
+      for (UInt32 unI = 0; unI < vec_convexhull_faces.size(); unI++) {
+         CVector3 cV1 = vec_convexhull_points[vec_convexhull_faces[unI][0]];
+         for (UInt32 unJ = 0; unJ < vec_convexhull_faces[unI].size() - 2; unJ++) {
+            CVector3 cV2 = vec_convexhull_points[vec_convexhull_faces[unI][unJ+1]];
+            CVector3 cV3 = vec_convexhull_points[vec_convexhull_faces[unI][unJ+2]];
+            CVector3 normal = (cV3 - cV1).CrossProduct(cV2 - cV1);
             glNormal3f(normal.GetX(), normal.GetY(), normal.GetZ());
-            glVertex3f(v1.GetX(), v1.GetY(), v1.GetZ());
-            glVertex3f(v2.GetX(), v2.GetY(), v2.GetZ());
-            glVertex3f(v3.GetX(), v3.GetY(), v3.GetZ());
+            glVertex3f(cV1.GetX(), cV1.GetY(), cV1.GetZ());
+            glVertex3f(cV2.GetX(), cV2.GetY(), cV2.GetZ());
+            glVertex3f(cV3.GetX(), cV3.GetY(), cV3.GetZ());
          }
       }
       glEnd();

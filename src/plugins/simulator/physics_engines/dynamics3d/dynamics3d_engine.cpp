@@ -181,13 +181,6 @@ namespace argos {
           ++it) {
          it->second->UpdateEntityStatus();
       }
-
-	  btDefaultSerializer* serializer = new btDefaultSerializer();
-	  m_cWorld.serialize(serializer);
-	  FILE* file = fopen("output.bullet","wb");
-	  fwrite(serializer->getBufferPointer(), serializer->getCurrentBufferSize(),1, file);
-	  fclose(file);
-
    }
    
    /****************************************/
