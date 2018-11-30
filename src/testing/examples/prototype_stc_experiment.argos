@@ -1,0 +1,184 @@
+<?xml version="1.0" ?>
+<argos-configuration>
+
+  <!-- ************************* -->
+  <!-- * General configuration * -->
+  <!-- ************************* -->
+  <framework>
+    <experiment length="0" ticks_per_second="25" random_seed="0"/>
+  </framework>
+
+  <!-- *************** -->
+  <!-- * Controllers * -->
+  <!-- *************** -->
+  <controllers>
+    <lua_controller id="vehicle_controller">
+      <actuators>
+        <joints implementation="default">
+          <joint id="base_wheel_left" mode="velocity" max_impulse="0.005"/>
+          <joint id="base_wheel_right" mode="velocity" max_impulse="0.005"/>
+        </joints>
+        <radios implementation="default"/>
+        <leds implementation="default" medium="leds"/>
+      </actuators>
+      <sensors>
+        <joints implementation="default">
+          <joint id="base_wheel_left" mode="velocity"/>
+          <joint id="base_wheel_right" mode="velocity"/>
+        </joints>
+        <radios implementation="default" show_rays="true"/>
+      </sensors>
+      <params script="src/testing/examples/prototype_stc_vehicle.lua"/>
+    </lua_controller>
+
+    <lua_controller id="quadcopter_controller">
+      <actuators>
+        <radios implementation="default"/>
+        <leds implementation="default" medium="leds"/>
+      </actuators>
+      <sensors>
+        <cameras implementation="default" show_frustum="true">
+          <camera id="fixed_camera" range="0.01:0.25" resolution="640,480"
+                  anchor="base" position="0,0,0" orientation="0,0,180"
+                  focal_length="600,600" principle_point="320,240">
+            <led_detector medium="leds" show_rays="true"/>
+          </camera>
+        </cameras>
+
+        <radios implementation="default" show_rays="true"/>
+      </sensors>
+      <!--params script="../../src/testing/examples/dynamics3d_multi_body_test.lua"/-->
+      <params script="src/testing/examples/prototype_stc_quadcopter.lua"/>
+    </lua_controller>
+
+  </controllers>
+
+  <!-- *********************** -->
+  <!-- * Arena configuration * -->
+  <!-- *********************** -->
+  <arena size="0.5, 0.5, 0.5" center="0, 0, 0.25">
+    <box id="bn" size="0.025,0.475,0.025" movable="false" mass="10">
+      <body position="0.2375,0.0125,0"  orientation="0,0,0" />
+    </box>
+    <box id="be" size="0.475,0.025,0.025" movable="false" mass="10">
+      <body position="0.0125,-0.2375,0"  orientation="0,0,0" />
+    </box>
+    <box id="bs" size="0.025,0.475,0.025" movable="false" mass="10">
+      <body position="-0.2375,-0.0125,0"  orientation="0,0,0" />
+    </box>
+    <box id="bw" size="0.475,0.025,0.025" movable="false" mass="10">
+      <body position="-0.0125,0.2375,0"  orientation="0,0,0" />
+    </box>
+
+    <distribute>
+      <position method="grid" center="0,0,0" distances="0.075,0.075,0"
+                layout="2,2,1" />
+      <orientation method="constant" values="0,0,0" />
+      <entity quantity="4" max_trials="4">
+        <prototype id="vehicle" movable="true">
+          <body position="0,0,0" orientation="0,0,0" />
+          <controller config="vehicle_controller"/>
+          <links ref="base">
+            <link id="base" geometry="cylinder" radius="0.025" height="0.02" mass="1"
+                  position="0,0,0.01" orientation="0,0,0" />
+            <link id="wheel_left" geometry="cylinder" radius="0.01" height=".005"
+                  mass=".05" position="0,.015,0.01" orientation="0,0,-90" />
+            <link id="wheel_right" geometry="cylinder" radius="0.01" height=".005"
+                  mass=".05" position="0,-.015,0.01" orientation="0,0,90" />
+            <link id="pivot_front" geometry="sphere" radius="0.01"
+                  mass=".05" position="0.015,0,0" orientation="0,0,0" />
+            <link id="pivot_back" geometry="sphere" radius="0.01"
+                  mass=".05" position="-0.015,0,0" orientation="0,0,0" />
+          </links>
+          <joints>
+            <joint id="base_wheel_right" type="revolute" axis="0,0,1">
+              <parent link="base" position="0,-.015,0" orientation="0,0,90"/>
+              <child link="wheel_right" position="0,0,0" orientation="0,0,0"/>
+            </joint>
+            <joint id="base_wheel_left" type="revolute" axis="0,0,1">
+              <parent link="base" position="0,.015,0" orientation="0,0,-90"/>
+              <child link="wheel_left" position="0,0,0" orientation="0,0,0"/>
+            </joint>
+            <joint id="base_pivot_front" type="spherical">
+              <parent link="base" position="0.015,0,0" orientation="0,0,0"/>
+              <child link="pivot_front" position="0,0,0.01" orientation="0,0,0"/>
+            </joint>
+            <joint id="base_pivot_back" type="spherical">
+              <parent link="base" position="-0.015,0,0" orientation="0,0,0"/>
+              <child link="pivot_back" position="0,0,0.01" orientation="0,0,0"/>
+            </joint>
+          </joints>
+          <devices>
+            <radios medium="zigbee">
+              <radio anchor="base" position="0,0,0.02" range="1"/>
+            </radios>
+            <leds medium="leds">
+              <led color="blue" anchor="base" offset="0,0,0.02125"/>
+            </leds>
+          </devices>
+        </prototype>
+      </entity>
+    </distribute>
+
+
+    <prototype id="quadcopter" movable="false">
+      <body position="0,0,0.25" orientation="0,0,0" />
+      <controller config="quadcopter_controller"/>
+      <links ref="base">
+        <link id="base" geometry="cylinder" radius="0.025" height="0.01" mass="1"
+              position="0,0,0" orientation="0,0,0" />
+      </links>
+      <joints/>
+      <devices>
+        <radios medium="zigbee">
+          <radio anchor="base" position="0,0,0" range="1"/>
+        </radios>
+        <leds medium="leds">
+          <led color="black" anchor="base" offset=" 0.005,-0.005,0.01"/>
+          <led color="black" anchor="base" offset=" 0.005, 0.005,0.01"/>
+          <led color="black" anchor="base" offset="-0.005, 0.005,0.01"/>
+          <led color="black" anchor="base" offset="-0.005,-0.005,0.01"/>
+        </leds>
+      </devices>
+    </prototype>
+
+
+  </arena>
+
+  <!-- ******************* -->
+  <!-- * Physics engines * -->
+  <!-- ******************* -->
+  <physics_engines>
+    <dynamics3d id="dyn3d" iterations="20">
+      <floor height="0.01"/>
+      <gravity g="9.8" />
+    </dynamics3d>
+  </physics_engines>
+
+  <!-- ********* -->
+  <!-- * Media * -->
+  <!-- ********* -->
+  <media>
+    <led id="leds" index="grid" grid_size="20,20,20" />
+    <radio id="zigbee" index="grid" grid_size="20,20,20" />
+  </media>
+  <!-- ****************** -->
+  <!-- * Visualization * -->
+  <!-- ****************** -->
+  <visualization>
+    <qt-opengl lua_editor="true">
+      <camera>
+        <placement idx="0" position=" 0,   -1.25,0.5" look_at="0,0,0.05" lens_focal_length="78" />
+        <placement idx="1" position=" 1.25,-1.25,0.6" look_at="0,0,0.05" lens_focal_length="92" />
+        <placement idx="2" position=" 1.25, 0,   0.5" look_at="0,0,0.05" lens_focal_length="78" />
+        <placement idx="3" position=" 1.25, 1.25,0.6" look_at="0,0,0.05" lens_focal_length="92" />
+        <placement idx="4" position=" 0,    1.25,0.5" look_at="0,0,0.05" lens_focal_length="78" />
+        <placement idx="5" position="-1.25, 1.25,0.6" look_at="0,0,0.05" lens_focal_length="92" />
+        <placement idx="6" position="-1.25, 0,   0.5" look_at="0,0,0.05" lens_focal_length="78" />
+        <placement idx="7" position="-1.25,-1.25,0.6" look_at="0,0,0.05" lens_focal_length="92" />
+        <placement idx="8" position="0,0,0.5" look_at="0.0,0.0,0.125" up="1,0,0" lens_focal_length="40"/>
+      </camera>
+    </qt-opengl>
+  </visualization>
+
+</argos-configuration>

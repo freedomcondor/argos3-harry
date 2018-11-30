@@ -1,0 +1,292 @@
+<?xml version="1.0" ?>
+<argos-configuration>
+
+  <!-- ************************* -->
+  <!-- * General configuration * -->
+  <!-- ************************* -->
+  <framework>
+    <experiment length="0" ticks_per_second="20" random_seed="1"/>
+  </framework>
+
+  <controllers>
+    <lua_controller id="builderbot_controller">
+      <actuators>
+        <joints implementation="default">
+          <joint id="base_wheel_left" mode="velocity" max_impulse="0.005"/>
+          <joint id="base_wheel_right" mode="velocity" max_impulse="0.005"/>
+        </joints>
+      </actuators>
+      <sensors>
+        <joints implementation="default">
+          <joint id="base_wheel_left" mode="velocity"/>
+          <joint id="base_wheel_right" mode="velocity"/>
+        </joints>
+      </sensors>
+      <params script="src/testing/examples/prototype_builderbot_test.lua"/>
+    </lua_controller>
+  </controllers>
+
+  <!-- *********************** -->
+  <!-- * Arena configuration * -->
+  <!-- *********************** -->
+  <!--arena size="1, 1, 0.5" center="0, 0, 0.125">
+    <box id="bn" size="0.025,0.975,0.05" movable="false" mass="10">
+      <body position="0.4875,0.0125,0"  orientation="0,0,0" />
+    </box>
+    <box id="be" size="0.975,0.025,0.05" movable="false" mass="10">
+      <body position="0.0125,-0.4875,0"  orientation="0,0,0" />
+    </box>
+    <box id="bs" size="0.025,0.975,0.05" movable="false" mass="10">
+      <body position="-0.4875,-0.0125,0"  orientation="0,0,0" />
+    </box>
+    <box id="bw" size="0.975,0.025,0.05" movable="false" mass="10">
+      <body position="-0.0125,0.4875,0"  orientation="0,0,0" />
+    </box-->
+  <arena size="1, 1, 0.625" center="0, 0, 0.125">
+    <!-- ******************************* -->
+    <!-- * Autonomous Robot Definition * -->
+    <!-- ******************************* -->
+
+    <prototype id="prototype0" movable="true">
+      <body position="0,0,0" orientation="0,0,0" />
+      <controller config="builderbot_controller"/>
+      <links ref="base">
+        <!-- base body -->
+        <link id="base" geometry="box" size="0.10,0.078,0.03" mass="0.050"
+              position="0,0,0.011"/>
+        <link id="tail" geometry="box" size="0.03,0.078,0.03" mass="0.050"
+              position="-0.065,0,0.011"/>
+
+        <!-- wheels -->
+        <link id="wheel_right" geometry="cylinder" radius="0.02" height="0.015" mass="0.050"
+              position="0,-0.0675,0.02" orientation="0,0,-90"/>
+        <link id="wheel_left" geometry="cylinder" radius="0.02" height="0.015" mass="0.050"
+              position="0,0.0525,0.02" orientation="0,0,-90"/>
+        <link id="pivot_front" geometry="sphere" radius="0.02"
+              mass=".05" position="0.03,0,0" orientation="0,0,0" />
+        <link id="pivot_back" geometry="sphere" radius="0.02"
+              mass=".05" position="-0.06,0,0" orientation="0,0,0" />
+
+        <!-- side covers -->
+        <link id="side_cover_fl" geometry="cylinder" radius="0.019" height="0.018" mass="0.050"
+              position="0.03,0.0525,0.02" orientation="0,0,-90"/>
+        <link id="side_cover_bl" geometry="cylinder" radius="0.019" height="0.018" mass="0.050"
+              position="-0.06,0.0525,0.02" orientation="0,0,-90"/>
+        <link id="side_cover_left" geometry="box" size="0.09,0.038,0.018" mass="0.050"
+              position="-0.015,0.0525,0.02" orientation="0,0,-90"/>
+
+        <link id="side_cover_fr" geometry="cylinder" radius="0.019" height="0.018" mass="0.050"
+              position="0.03,-0.0525,0.02" orientation="0,0,90"/>
+        <link id="side_cover_br" geometry="cylinder" radius="0.019" height="0.018" mass="0.050"
+              position="-0.06,-0.0525,0.02" orientation="0,0,90"/>
+        <link id="side_cover_right" geometry="box" size="0.09,0.038,0.018" mass="0.050"
+              position="-0.015,-0.0525,0.02" orientation="0,0,90"/>
+
+        <!-- upper base body -->
+        <link id="upper_base" geometry="convexhull" mass="0.05"
+              position="-0.015,0,0.041">
+              <point position=" 0.039, 0.065, 0"/>
+              <point position="-0.039, 0.065, 0"/>
+              <point position=" 0.039,-0.065, 0"/>
+              <point position="-0.039,-0.065, 0"/>
+              <point position=" 0.065, 0.039, 0"/>
+              <point position="-0.065, 0.039, 0"/>
+              <point position=" 0.065,-0.039, 0"/>
+              <point position="-0.065,-0.039, 0"/>
+
+              <point position=" 0.039, 0.065, 0.057"/>
+              <point position="-0.039, 0.065, 0.057"/>
+              <point position=" 0.039,-0.065, 0.057"/>
+              <point position="-0.039,-0.065, 0.057"/>
+              <point position=" 0.065, 0.039, 0.057"/>
+              <point position="-0.065, 0.039, 0.057"/>
+              <point position=" 0.065,-0.039, 0.057"/>
+              <point position="-0.065,-0.039, 0.057"/>
+        </link>
+
+        <!-- lifter -->
+        <link id="lifter" geometry="convexhull" mass="0.05"
+              position="0.005,0,0.098">
+              <point position=" 0.015, 0.047, 0"/>
+              <point position=" 0.015,-0.047, 0"/>
+              <point position="-0.015, 0.047, 0"/>
+              <point position="-0.015,-0.047, 0"/>
+
+              <point position=" 0.029, 0.014, 0"/>
+              <point position="-0.029, 0.014, 0"/>
+              <point position="-0.029,-0.014, 0"/>
+              <point position=" 0.029,-0.014, 0"/>
+
+              <point position=" 0.015, 0.047, 0.28"/>
+              <point position=" 0.015,-0.047, 0.28"/>
+              <point position="-0.015, 0.047, 0.28"/>
+              <point position="-0.015,-0.047, 0.28"/>
+              <point position=" 0.029, 0.014, 0.28"/>
+              <point position="-0.029, 0.014, 0.28"/>
+              <point position="-0.029,-0.014, 0.28"/>
+              <point position=" 0.029,-0.014, 0.28"/>
+        </link>
+
+        <!-- stepper motor -->
+        <link id="stepper_motor" geometry="box" size="0.037,0.05,0.045" mass="0.050"
+              position="-0.05,0,0.098"/>
+
+        <!-- manipulator -->
+        <link id="horizontal_link" geometry="box" size="0.04,0.064,0.02" mass="0.500"
+              position="0.04,0,0.148"/>
+        <link id="vertical_link" geometry="box" size="0.004000,0.0450,0.14" mass="0.250"
+              position="0.058,0,0.008"/>
+        <link id="lift_fixture" geometry="box" size="0.07,0.07,0.01" mass="0.250"
+              position="0.095,0,0.06"/>
+
+        <!-- magnets -->
+        <link id="electromagnet_q1" geometry="cylinder" radius="0.010" height="0.023500" mass="0.010"
+              position="0.118,0.023000,0.06"/>
+        <link id="electromagnet_q2" geometry="cylinder" radius="0.010" height="0.023500" mass="0.010"
+              position="0.072,0.023000,0.06"/>
+        <link id="electromagnet_q3" geometry="cylinder" radius="0.010" height="0.023500" mass="0.010"
+              position="0.118,-0.023000,0.06"/>
+        <link id="electromagnet_q4" geometry="cylinder" radius="0.010" height="0.023500" mass="0.010"
+              position="0.072,-0.023000,0.06"/>
+      </links>
+      <joints>
+        <!-- base body -->
+        <joint id="base_tail" type="fixed" axis="0,0,1">
+          <parent link="base" position="-0.05,0,0.015" orientation="0,0,0"/>
+          <child link="tail" position="0.015,0,0.015" orientation="0,0,0"/>
+        </joint>
+
+        <!-- wheels -->
+        <joint id="base_wheel_right" type="revolute" axis="0,0,1">
+          <parent link="base" position="0,-0.0675,0.009" orientation="0,0,-90"/>
+          <child link="wheel_right" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="base_wheel_left" type="revolute" axis="0,0,1">
+          <parent link="base" position="0,0.0525,0.009" orientation="0,0,-90"/>
+          <child link="wheel_left" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="base_pivot_front" type="spherical">
+          <parent link="base" position="0.03,0,0.009" orientation="0,0,0"/>
+          <child link="pivot_front" position="0,0,0.02" orientation="0,0,0"/>
+        </joint>
+        <joint id="base_pivot_back" type="spherical">
+          <parent link="base" position="-0.06,0,0.009" orientation="0,0,0"/>
+          <child link="pivot_back" position="0,0,0.02" orientation="0,0,0"/>
+        </joint>
+
+        <!-- side covers -->
+        <joint id="base_side_cover_fl" type="fixed" axis="0,0,1">
+          <parent link="base" position="0.03,0.0525,0.009" orientation="0,0,-90"/>
+          <child link="side_cover_fl" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="base_side_cover_bl" type="fixed" axis="0,0,1">
+          <parent link="base" position="-0.06,0.0525,0.009" orientation="0,0,-90"/>
+          <child link="side_cover_bl" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="base_side_cover_left" type="fixed" axis="0,0,1">
+          <parent link="base" position="-0.015,0.0525,0.009" orientation="0,0,-90"/>
+          <child link="side_cover_left" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+
+        <joint id="base_side_cover_fr" type="fixed" axis="0,0,1">
+          <parent link="base" position="0.03,-0.0525,0.009" orientation="0,0,90"/>
+          <child link="side_cover_fr" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="base_side_cover_br" type="fixed" axis="0,0,1">
+          <parent link="base" position="-0.06,-0.0525,0.009" orientation="0,0,90"/>
+          <child link="side_cover_br" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="base_side_cover_right" type="fixed" axis="0,0,1">
+          <parent link="base" position="-0.015,-0.0525,0.009" orientation="0,0,90"/>
+          <child link="side_cover_right" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+
+        <!-- upper base body -->
+        <joint id="base_upper_base" type="fixed" axis="0,0,1">
+          <parent link="base" position="-0.015,0,0.03" orientation="0,0,0"/>
+          <child link="upper_base" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+
+        <!-- lifter -->
+        <joint id="upper_base_lifter" type="fixed" axis="0,0,1">
+          <parent link="upper_base" position="0.02,0,0.057" orientation="0,0,0"/>
+          <child link="lifter" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+
+        <!-- stepper motor -->
+        <joint id="upper_base_stepper_motor" type="fixed" axis="0,0,1">
+          <parent link="upper_base" position="-0.035,0,0.057" orientation="0,0,0"/>
+          <child link="stepper_motor" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+
+        <!-- manipulator -->
+        <joint id="lifter_horizontal_link" type="fixed" axis="0,0,1"  limit="0.0:0.145">
+          <parent link="lifter" position="0.035,0,0.05" orientation="0,0,0"/>
+          <child link="horizontal_link" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="horizontal_link_vertical_link" type="fixed" axis="0,0,1">
+          <parent link="horizontal_link" position="0.018,0,0.0" orientation="0,0,0"/>
+          <child link="vertical_link" position="0.0,0,0.14" orientation="0,0,0"/>
+        </joint>
+        <joint id="vertical_link_lift_fixture" type="fixed" axis="0,0,1">
+          <parent link="vertical_link" position="0.002,0,0.052" orientation="0,0,0"/>
+          <child link="lift_fixture" position="-0.035,0,0" orientation="0,0,0"/>
+        </joint>
+
+        <!-- magnets -->
+        <joint id="lift_fixture_electromagnet_q1" type="fixed" axis="0,0,1">
+          <parent link="lift_fixture" position="0.023,0.023,0.0" orientation="0,0,0"/>
+          <child link="electromagnet_q1" position="0.0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="lift_fixture_electromagnet_q2" type="fixed" axis="0,0,1">
+          <parent link="lift_fixture" position="-0.023,0.023,0.0" orientation="0,0,0"/>
+          <child link="electromagnet_q2" position="0.0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="lift_fixture_electromagnet_q3" type="fixed" axis="0,0,1">
+          <parent link="lift_fixture" position="0.023,-0.023,0.0" orientation="0,0,0"/>
+          <child link="electromagnet_q3" position="0.0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="lift_fixture_electromagnet_q4" type="fixed" axis="0,0,1">
+          <parent link="lift_fixture" position="-0.023,-0.023,0.0" orientation="0,0,0"/>
+          <child link="electromagnet_q4" position="0.0,0,0" orientation="0,0,0"/>
+        </joint>
+      </joints>
+    </prototype>
+  </arena>
+
+  <!-- ******************* -->
+  <!-- * Physics engines * -->
+  <!-- ******************* -->
+  <physics_engines>
+    <dynamics3d id="dyn3d" iterations="20">
+      <gravity g="9.8" />
+      <floor height="0.01"/>
+      <magnetism max_distance="0.04"/>
+    </dynamics3d>
+  </physics_engines>
+
+  <!-- ********* -->
+  <!-- * Media * -->
+  <!-- ********* -->
+  <media/>
+
+  <!-- ****************** -->
+  <!-- * Visualization * -->
+  <!-- ****************** -->
+  <visualization>
+    <qt-opengl lua_editor="false">
+      <camera>
+        <placement idx="0" position=" 0,  -2.5,1" look_at="0,0,0.05" lens_focal_length="78" />
+        <placement idx="1" position=" 2.5,-2.5,1" look_at="0,0,0.05" lens_focal_length="92" />
+        <placement idx="2" position=" 2.5, 0,  1" look_at="0,0,0.05" lens_focal_length="78" />
+        <placement idx="3" position=" 2.5, 2.5,1" look_at="0,0,0.05" lens_focal_length="92" />
+        <placement idx="4" position=" 0,   2.5,1" look_at="0,0,0.05" lens_focal_length="78" />
+        <placement idx="5" position="-2.5, 2.5,1" look_at="0,0,0.05" lens_focal_length="92" />
+        <placement idx="6" position="-2.5, 0,  1" look_at="0,0,0.05" lens_focal_length="78" />
+        <placement idx="7" position="-2.5,-2.5,1" look_at="0,0,0.05" lens_focal_length="92" />
+        <placement idx="8" position="0,0,0.5" look_at="0.0,0.0,0.125" up="1,0,0" lens_focal_length="40" />
+      </camera>
+    </qt-opengl>
+  </visualization>
+
+</argos-configuration>

@@ -62,8 +62,6 @@ namespace argos {
                m_vecEdge[sFace.P[2]][sFace.P[0]].Erase(sFace.P[1]);
                m_vecEdge[sFace.P[1]][sFace.P[2]].Erase(sFace.P[0]);
                m_vecEdge[sFace.P[2]][sFace.P[1]].Erase(sFace.P[0]);
-               //m_vecFaces[unIdxFace--] = m_vecFaces.back();
-               //m_vecFaces.resize(m_vecFaces.size() - 1);
                m_vecFaces[unIdxFace] = m_vecFaces.back();
                m_vecFaces.erase(m_vecFaces.end());
                unIdxFace--;

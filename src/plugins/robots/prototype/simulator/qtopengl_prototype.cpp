@@ -418,7 +418,7 @@ namespace argos {
          for (UInt32 unJ = 0; unJ < vec_convexhull_faces[unI].size() - 2; unJ++) {
             CVector3 cV2 = vec_convexhull_points[vec_convexhull_faces[unI][unJ+1]];
             CVector3 cV3 = vec_convexhull_points[vec_convexhull_faces[unI][unJ+2]];
-            CVector3 normal = (cV3 - cV1).CrossProduct(cV2 - cV1);
+            CVector3 normal = (cV2 - cV1).CrossProduct(cV3 - cV1);
             glNormal3f(normal.GetX(), normal.GetY(), normal.GetZ());
             glVertex3f(cV1.GetX(), cV1.GetY(), cV1.GetZ());
             glVertex3f(cV2.GetX(), cV2.GetY(), cV2.GetZ());
