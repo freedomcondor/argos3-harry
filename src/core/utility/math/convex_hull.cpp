@@ -55,15 +55,17 @@ namespace argos {
          /* find all the faces with the focal point at its outside, and delete it */
          for (UInt32 unIdxFace = 0; unIdxFace < m_vecFaces.size(); unIdxFace++) {
             Face sFace = m_vecFaces[unIdxFace];
-            if (sFace.Normal.DotProduct(m_vecPoints[unIdxPoint]) > sFace.Direction) {
+            /* if focal point is in the same plane with this face, 
+             * the Real zero problem should be considered 
+             * */
+            if (sFace.Normal.DotProduct(m_vecPoints[unIdxPoint]) > sFace.Direction + m_fZero) {
                m_vecEdge[sFace.P[0]][sFace.P[1]].Erase(sFace.P[2]);
                m_vecEdge[sFace.P[1]][sFace.P[0]].Erase(sFace.P[2]);
                m_vecEdge[sFace.P[0]][sFace.P[2]].Erase(sFace.P[1]);
                m_vecEdge[sFace.P[2]][sFace.P[0]].Erase(sFace.P[1]);
                m_vecEdge[sFace.P[1]][sFace.P[2]].Erase(sFace.P[0]);
                m_vecEdge[sFace.P[2]][sFace.P[1]].Erase(sFace.P[0]);
-               m_vecFaces[unIdxFace] = m_vecFaces.back();
-               m_vecFaces.erase(m_vecFaces.end());
+               m_vecFaces.erase(m_vecFaces.begin()+unIdxFace);
                unIdxFace--;
             }
          }
@@ -129,13 +131,13 @@ namespace argos {
                   CVector3 cNormal = (m_vecPoints[unI] - m_vecPoints[unJ]).CrossProduct(
                                       m_vecPoints[unI] - m_vecPoints[unK]);
                   /* normal is 0 means this 3 points are in a line */
-                  /* TODO: cNormal.Length() == 0 is comparing Real with 0, for now it works
-                   * compare it with 0.0000001 if necessary
+                  /* compare Real cNormal.Length() with 0 (m_fZero)
                    * */
-                  if (cNormal.Length() == 0)
+                  if (cNormal.Length() < m_fZero)
                      continue;
                   /* whether the 4th point is in the same plane */
-                  if (cNormal.DotProduct(m_vecPoints[unL] - m_vecPoints[unI]) == 0)
+                  if ((cNormal.DotProduct(m_vecPoints[unL] - m_vecPoints[unI]) < m_fZero) &&
+                      (cNormal.DotProduct(m_vecPoints[unL] - m_vecPoints[unI]) >-m_fZero) )
                      continue;
                   vecFirst4Points.push_back(unI);
                   vecFirst4Points.push_back(unJ);

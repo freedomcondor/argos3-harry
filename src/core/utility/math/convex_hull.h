@@ -36,6 +36,8 @@ namespace argos {
    public:
 
       CConvexHull(const std::vector<CVector3>& vec_points) :
+         /* TODO: calculate m_fZero based on point cloud extention*/
+         m_fZero(0.00000001),
          m_vecPoints(vec_points) {
          ComputeConvexHull();
       }
@@ -80,6 +82,9 @@ namespace argos {
       };
       std::vector<Face> m_vecFaces;
       Face MakeFace(UInt32 un_A, UInt32 un_B, UInt32 un_C, UInt32 un_inside_point);
+
+      /* for Real zero problem*/
+      Real m_fZero;
 
    private:
       std::vector<CVector3> m_vecPoints;

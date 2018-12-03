@@ -31,14 +31,6 @@
     <!-- * Autonomous Robot Definition * -->
     <!-- ******************************* -->
 
-    <!--distribute>
-      <position method="uniform" min="-0.15,-0.15,0.03" max="0.15,0.15,0.9" />
-      <orientation method="uniform" min="0,0,0" max="360,360,360" />
-      <entity quantity="200" max_trials="100" base_num="1000">
-        <box id="b0" size="0.01,0.01,0.01" movable="true" mass="0.05"/>
-      </entity>
-    </distribute-->
-
     <prototype id="prototype0" movable="true">
       <body position="0,0,0.4" orientation="0,0,0" />
       <links ref="box0">
@@ -87,8 +79,9 @@
               <point position=" 0.005,  0.00,  0.04"/>
               <point position="-0.005,  0.00,  0.04"/>
 
-              <point position=" 0.02,  0.01,  0.03"/>
               <point position=" 0.02,  0.01,  0.00"/>
+
+              <point position=" 0.02,  0.01,  0.03"/>
               <point position=" 0.02,  0.01,  0.01"/>
 
               <point position=" 0.01,  0.02,  0.03"/>
