@@ -1,0 +1,379 @@
+<?xml version="1.0" ?>
+<argos-configuration>
+
+  <!-- ************************* -->
+  <!-- * General configuration * -->
+  <!-- ************************* -->
+  <framework>
+    <experiment length="0" ticks_per_second="20" random_seed="1"/>
+  </framework>
+
+  <controllers>
+    <lua_controller id="builderbot_controller">
+      <actuators>
+        <joints implementation="default">
+          <joint id="base_wheel_left" mode="velocity" max_impulse="0.05"/>
+          <joint id="base_wheel_right" mode="velocity" max_impulse="0.05"/>
+          <joint id="lifter_vertical_link" mode="velocity" max_impulse="0.5"/>
+        </joints>
+        <magnets implementation="default"/>
+      </actuators>
+      <sensors>
+        <joints implementation="default">
+          <joint id="base_wheel_left" mode="velocity"/>
+          <joint id="base_wheel_right" mode="velocity"/>
+          <joint id="lifter_vertical_link" mode="position"/>
+        </joints>
+      </sensors>
+      <params script="src/testing/examples/prototype_builderbot_device_test.lua"/>
+    </lua_controller>
+  </controllers>
+
+  <!-- *********************** -->
+  <!-- * Arena configuration * -->
+  <!-- *********************** -->
+  <!--arena size="1, 1, 0.5" center="0, 0, 0.125">
+    <box id="bn" size="0.025,0.975,0.05" movable="false" mass="10">
+      <body position="0.4875,0.0125,0"  orientation="0,0,0" />
+    </box>
+    <box id="be" size="0.975,0.025,0.05" movable="false" mass="10">
+      <body position="0.0125,-0.4875,0"  orientation="0,0,0" />
+    </box>
+    <box id="bs" size="0.025,0.975,0.05" movable="false" mass="10">
+      <body position="-0.4875,-0.0125,0"  orientation="0,0,0" />
+    </box>
+    <box id="bw" size="0.975,0.025,0.05" movable="false" mass="10">
+      <body position="-0.0125,0.4875,0"  orientation="0,0,0" />
+    </box-->
+  <arena size="2, 2, 2" center="0, 0, 0.125">
+    <!-- ******************************* -->
+    <!-- * Autonomous Robot Definition * -->
+    <!-- ******************************* -->
+
+    <!--distribute>
+      <position method="uniform" min="-0.5,-0.5,0.03" max="0.5,0.5,0.9" />
+      <orientation method="uniform" min="0,0,0" max="360,360,360" />
+      <entity quantity="20" max_trials="100" base_num="1000"-->
+
+    <prototype id="prototype0" movable="true">
+      <body position="0,0,0" orientation="0,0,0" />
+      <controller config="builderbot_controller"/>
+      <links ref="base">
+        <!-- base body -->
+        <link id="base" geometry="box" size="0.13,0.14,0.039" mass="0.6"
+              position="-0.015,0,0.002"/>
+
+        <!-- wheels -->
+        <link id="wheel_right" geometry="cylinder" radius="0.02" height="0.015" mass="0.0005"
+              position="0,-0.0675,0.02" orientation="0,0,-90"/>
+        <link id="wheel_left" geometry="cylinder" radius="0.02" height="0.015" mass="0.0005"
+              position="0,0.0525,0.02" orientation="0,0,-90"/>
+        <link id="pivot_front" geometry="sphere" radius="0.01999"
+              mass="0.0005" position="0.03,0,0" orientation="0,0,0" />
+        <link id="pivot_back" geometry="sphere" radius="0.02"
+              mass="0.0005" position="-0.06,0,0" orientation="0,0,0" />
+
+        <!-- upper base body -->
+        <link id="upper_base" geometry="convexhull" mass="0.06"
+              position="-0.015,0,0.041">
+              <point position=" 0.039, 0.065, 0"/>
+              <point position="-0.039, 0.065, 0"/>
+              <point position=" 0.039,-0.065, 0"/>
+              <point position="-0.039,-0.065, 0"/>
+              <point position=" 0.065, 0.039, 0"/>
+              <point position="-0.065, 0.039, 0"/>
+              <point position=" 0.065,-0.039, 0"/>
+              <point position="-0.065,-0.039, 0"/>
+
+              <point position=" 0.039, 0.065, 0.057"/>
+              <point position="-0.039, 0.065, 0.057"/>
+              <point position=" 0.039,-0.065, 0.057"/>
+              <point position="-0.039,-0.065, 0.057"/>
+              <point position=" 0.065, 0.039, 0.057"/>
+              <point position="-0.065, 0.039, 0.057"/>
+              <point position=" 0.065,-0.039, 0.057"/>
+              <point position="-0.065,-0.039, 0.057"/>
+        </link>
+
+        <!-- lifter -->
+        <link id="lifter" geometry="box" size="0.058,0.094,0.28" mass="0.6"
+              position="0.005,0.0,0.098" orientation="0,0,0"/>
+
+        <!-- stepper motor -->
+        <link id="stepper_motor" geometry="box" size="0.037,0.05,0.045" mass="0.30"
+              position="-0.05,0,0.098"/>
+
+        <!-- manipulator -->
+        <link id="vertical_link" geometry="box" size="0.004000,0.0450,0.16" mass="0.10"
+              position="0.058,0,0.008"/>
+        <link id="lift_fixture" geometry="box" size="0.07,0.07,0.01" mass="0.20"
+              position="0.095,0,0.06"/>
+
+        <!-- for devices delete when modelling -->
+        <!-- magnets -->
+        <link id="electromagnet_q1" geometry="cylinder" radius="0.010" height="0.023500" mass="0.0010"
+              position="0.118,0.023000,0.06"/>
+        <link id="electromagnet_q2" geometry="cylinder" radius="0.010" height="0.023500" mass="0.0010"
+              position="0.072,0.023000,0.06"/>
+        <link id="electromagnet_q3" geometry="cylinder" radius="0.010" height="0.023500" mass="0.0010"
+              position="0.118,-0.023000,0.06"/>
+        <link id="electromagnet_q4" geometry="cylinder" radius="0.010" height="0.023500" mass="0.0010"
+              position="0.072,-0.023000,0.06"/>
+      </links>
+      <joints>
+        <!-- wheels -->
+        <joint id="base_wheel_right" type="revolute" axis="0,0,1">
+          <parent link="base" position="0.015,-0.0675,0.018" orientation="0,0,-90"/>
+          <child link="wheel_right" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="base_wheel_left" type="revolute" axis="0,0,1">
+          <parent link="base" position="0.015,0.0525,0.018" orientation="0,0,-90"/>
+          <child link="wheel_left" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="base_pivot_front" type="spherical">
+          <parent link="base" position="0.03,0,0.018" orientation="0,0,0"/>
+          <child link="pivot_front" position="0,0,0.02" orientation="0,0,0"/>
+        </joint>
+        <joint id="base_pivot_back" type="spherical">
+          <parent link="base" position="-0.045,0,0.018" orientation="0,0,0"/>
+          <child link="pivot_back" position="0,0,0.02" orientation="0,0,0"/>
+        </joint>
+
+        <!-- upper base body -->
+        <joint id="base_upper_base" type="fixed" axis="0,0,1">
+          <parent link="base" position="0.0,0,0.039" orientation="0,0,0"/>
+          <child link="upper_base" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+
+        <!-- lifter -->
+        <joint id="upper_base_lifter" type="fixed" axis="0,0,1">
+          <parent link="upper_base" position="0.02,0,0.057" orientation="0,0,0"/>
+          <child link="lifter" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+
+        <!-- stepper motor -->
+        <joint id="upper_base_stepper_motor" type="fixed" axis="0,0,1">
+          <parent link="upper_base" position="-0.035,0,0.057" orientation="0,0,0"/>
+          <child link="stepper_motor" position="0,0,0" orientation="0,0,0"/>
+        </joint>
+
+        <!-- manipulator -->
+        <joint id="lifter_vertical_link" type="prismatic" axis="0,0,1" limit="0.0:0.145">
+          <parent link="lifter" position="0.053,0,-0.038" orientation="0,0,0"/>
+          <child link="vertical_link" position="0.0,0,0.052" orientation="0,0,0"/>
+        </joint>
+        <joint id="vertical_link_lift_fixture" type="fixed" axis="0,0,1">
+          <parent link="vertical_link" position="0.002,0,0.052" orientation="0,0,0"/>
+          <child link="lift_fixture" position="-0.035,0,0" orientation="0,0,0"/>
+        </joint>
+
+        <!-- for devices delete when modelling -->
+        <!-- magnets -->
+        <joint id="lift_fixture_electromagnet_q1" type="fixed" axis="0,0,1">
+          <parent link="lift_fixture" position="0.023,0.023,0.0" orientation="0,0,0"/>
+          <child link="electromagnet_q1" position="0.0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="lift_fixture_electromagnet_q2" type="fixed" axis="0,0,1">
+          <parent link="lift_fixture" position="-0.023,0.023,0.0" orientation="0,0,0"/>
+          <child link="electromagnet_q2" position="0.0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="lift_fixture_electromagnet_q3" type="fixed" axis="0,0,1">
+          <parent link="lift_fixture" position="0.023,-0.023,0.0" orientation="0,0,0"/>
+          <child link="electromagnet_q3" position="0.0,0,0" orientation="0,0,0"/>
+        </joint>
+        <joint id="lift_fixture_electromagnet_q4" type="fixed" axis="0,0,1">
+          <parent link="lift_fixture" position="-0.023,-0.023,0.0" orientation="0,0,0"/>
+          <child link="electromagnet_q4" position="0.0,0,0" orientation="0,0,0"/>
+        </joint>
+      </joints>
+      <devices>
+        <magnets>
+          <magnet anchor="electromagnet_q1" passive_field="0,0,300" active_field="0,0,200" offset="0,0,.01175"/>
+          <magnet anchor="electromagnet_q2" passive_field="0,0,300" active_field="0,0,200" offset="0,0,.01175"/>
+          <magnet anchor="electromagnet_q3" passive_field="0,0,300" active_field="0,0,200" offset="0,0,.01175"/>
+          <magnet anchor="electromagnet_q4" passive_field="0,0,300" active_field="0,0,200" offset="0,0,.01175"/>
+        </magnets>
+      </devices>
+    </prototype>
+
+      <!--/entity>
+    </distribute-->
+
+
+	<!--***********************************************-->
+        <prototype id="sblock0" movable="true">
+          <body position="0.10,0,0" orientation="0,0,0" />
+          <links ref="block">
+            <link id="block" geometry="box" size="0.055,0.055,0.055" mass="0.102"/>
+            <link id="magnet00" geometry="sphere" radius=".003" mass=".001" position=" .0225, .0225,.002"/>
+            <link id="magnet01" geometry="sphere" radius=".003" mass=".001" position="-.0225, .0225,.002"/>
+            <link id="magnet02" geometry="sphere" radius=".003" mass=".001" position="-.0225,-.0225,.002"/>
+            <link id="magnet03" geometry="sphere" radius=".003" mass=".001" position=" .0225,-.0225,.002"/>
+            <link id="magnet10" geometry="sphere" radius=".003" mass=".001" position=" .0225, .0225,.047"/>
+            <link id="magnet11" geometry="sphere" radius=".003" mass=".001" position="-.0225, .0225,.047"/>
+            <link id="magnet12" geometry="sphere" radius=".003" mass=".001" position="-.0225,-.0225,.047"/>
+            <link id="magnet13" geometry="sphere" radius=".003" mass=".001" position=" .0225,-.0225,.047"/>
+          </links>
+          <joints>
+            <joint id="block_magnet00" type="spherical">
+              <parent link="block" position="0.0225,0.0225,0.005" orientation="0,0,0"/>
+              <child link="magnet00" position="0,0,0.003" orientation="0,0,0"/>
+            </joint>
+            <joint id="block_magnet01" type="spherical">
+              <parent link="block" position="-0.0225,0.0225,0.005" orientation="0,0,0"/>
+              <child link="magnet01" position="0,0,0.003" orientation="0,0,0"/>
+            </joint>
+            <joint id="block_magnet02" type="spherical">
+              <parent link="block" position="-0.0225,-0.0225,0.005" orientation="0,0,0"/>
+              <child link="magnet02" position="0,0,0.003" orientation="0,0,0"/>
+            </joint>
+            <joint id="block_magnet03" type="spherical">
+              <parent link="block" position="0.0225,-0.0225,0.005" orientation="0,0,0"/>
+              <child link="magnet03" position="0,0,0.003" orientation="0,0,0"/>
+            </joint>
+            <joint id="block_magnet10" type="spherical">
+              <parent link="block" position="0.0225,0.0225,0.050" orientation="0,0,0"/>
+              <child link="magnet10" position="0,0,0.003" orientation="0,0,0"/>
+            </joint>
+            <joint id="block_magnet11" type="spherical">
+              <parent link="block" position="-0.0225,0.0225,0.050" orientation="0,0,0"/>
+              <child link="magnet11" position="0,0,0.003" orientation="0,0,0"/>
+            </joint>
+            <joint id="block_magnet12" type="spherical">
+              <parent link="block" position="-0.0225,-0.0225,0.050" orientation="0,0,0"/>
+              <child link="magnet12" position="0,0,0.003" orientation="0,0,0"/>
+            </joint>
+            <joint id="block_magnet13" type="spherical">
+              <parent link="block" position="0.0225,-0.0225,0.050" orientation="0,0,0"/>
+              <child link="magnet13" position="0,0,0.003" orientation="0,0,0"/>
+            </joint>
+          </joints>
+          <devices>
+            <magnets>
+              <magnet id="magnet00" passive_field="0,0,20" anchor="magnet00" offset="0,0,.003"/>
+              <magnet id="magnet01" passive_field="0,0,20" anchor="magnet01" offset="0,0,.003"/>
+              <magnet id="magnet02" passive_field="0,0,20" anchor="magnet02" offset="0,0,.003"/>
+              <magnet id="magnet03" passive_field="0,0,20" anchor="magnet03" offset="0,0,.003"/>
+              <magnet id="magnet10" passive_field="0,0,20" anchor="magnet10" offset="0,0,.003"/>
+              <magnet id="magnet11" passive_field="0,0,20" anchor="magnet11" offset="0,0,.003"/>
+              <magnet id="magnet12" passive_field="0,0,20" anchor="magnet12" offset="0,0,.003"/>
+              <magnet id="magnet13" passive_field="0,0,20" anchor="magnet13" offset="0,0,.003"/>
+            </magnets>
+            <tags medium="apriltags">
+              <tag anchor="block" observable_angle="75" side_length="0.024"
+                   position="0.000,0.000,0.056" orientation="0,0,0"/>
+              <tag anchor="block"  observable_angle="75" side_length="0.024"
+                   position="0.0285,0.000,0.0275" orientation="0,90,0"/>
+              <tag anchor="block" observable_angle="75" side_length="0.024"
+                   position="0.000,-0.0285,0.0275" orientation="0,0,90"/>
+              <tag anchor="block" observable_angle="75" side_length="0.024"
+                   position="-0.0285,0.000,0.0275" orientation="0,-90,0"/>
+              <tag anchor="block" observable_angle="75" side_length="0.024"
+                   position="0.000,0.0285,0.0275" orientation="0,0,-90"/>
+              <tag anchor="block" observable_angle="75" side_length="0.024"
+                   position="0.000,0.000,-0.001" orientation="0,0,180"/>
+            </tags>
+            <directional_leds medium="directional_leds">
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.000,0.020,0.056" orientation="0,0,0"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.020,0.000,0.056" orientation="0,0,0"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.000,-0.020,0.056" orientation="0,0,0"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="-0.020,0.000,0.056" orientation="0,0,0"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.0285,0.000,0.0475" orientation="0,90,0"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.0285,0.020,0.0275" orientation="0,90,0"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.0285,0.000,0.0075" orientation="0,90,0"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.0285,-0.020,0.0275" orientation="0,90,0"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.000,-0.0285,0.0475" orientation="0,0,90"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.020,-0.0285,0.0275" orientation="0,0,90"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.000,-0.0285,0.0075" orientation="0,0,90"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="-0.020,-0.0285,0.0275" orientation="0,0,90"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="-0.0285,0.000,0.0475" orientation="0,-90,0"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="-0.0285,-0.020,0.0275" orientation="0,-90,0"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="-0.0285,0.000,0.0075" orientation="0,-90,0"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="-0.0285,0.020,0.0275" orientation="0,-90,0"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.000,0.0285,0.0475" orientation="0,0,-90"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="-0.020,0.0285,0.0275" orientation="0,0,-90"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.000,0.0285,0.0075" orientation="0,0,-90"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.020,0.0285,0.0275" orientation="0,0,-90"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.000,0.020,-0.001" orientation="0,0,180"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.020,0.000,-0.001" orientation="0,0,180"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="0.000,-0.020,-0.001" orientation="0,0,180"/>
+              <directional_led anchor="block" observable_angle="75" color="black"
+                               position="-0.020,0.000,-0.001" orientation="0,0,180"/>
+            </directional_leds>
+            <radios medium="nfc">
+              <radio anchor="block" position="0.000,0.000,0.050" range="0.020"/>
+              <radio anchor="block" position="0.0225,0.000,0.0275" range="0.020"/>
+              <radio anchor="block" position="0.000,-0.0225,0.0275" range="0.020"/>
+              <radio anchor="block" position="-0.0225,0.000,0.0275" range="0.020"/>
+              <radio anchor="block" position="0.000,0.0225,0.0275" range="0.020"/>
+              <radio anchor="block" position="0.000,0.000,0.005" range="0.020"/>
+            </radios>
+          </devices>
+        </prototype>
+	<!--***********************************************-->
+ 
+  </arena>
+
+  <!-- ******************* -->
+  <!-- * Physics engines * -->
+  <!-- ******************* -->
+  <physics_engines>
+    <dynamics3d id="dyn3d" iterations="20">
+      <gravity g="9.8" />
+      <floor height="0.01"/>
+      <magnetism max_distance="0.04"/>
+    </dynamics3d>
+  </physics_engines>
+
+  <!-- ********* -->
+  <!-- * Media * -->
+  <!-- ********* -->
+  <media>
+    <directional_led id="directional_leds" index="grid" grid_size="20,20,20" />
+    <tag id="apriltags" index="grid" grid_size="20,20,20" />
+    <radio id="nfc" index="grid" grid_size="20,20,20" />
+  </media>
+
+  <!-- ****************** -->
+  <!-- * Visualization * -->
+  <!-- ****************** -->
+  <visualization>
+    <qt-opengl lua_editor="false">
+      <camera>
+        <placement idx="0" position=" 0,  -2.5,1" look_at="0,0,0.05" lens_focal_length="78" />
+        <placement idx="1" position=" 2.5,-2.5,1" look_at="0,0,0.05" lens_focal_length="92" />
+        <placement idx="2" position=" 2.5, 0,  1" look_at="0,0,0.05" lens_focal_length="78" />
+        <placement idx="3" position=" 2.5, 2.5,1" look_at="0,0,0.05" lens_focal_length="92" />
+        <placement idx="4" position=" 0,   2.5,1" look_at="0,0,0.05" lens_focal_length="78" />
+        <placement idx="5" position="-2.5, 2.5,1" look_at="0,0,0.05" lens_focal_length="92" />
+        <placement idx="6" position="-2.5, 0,  1" look_at="0,0,0.05" lens_focal_length="78" />
+        <placement idx="7" position="-2.5,-2.5,1" look_at="0,0,0.05" lens_focal_length="92" />
+        <placement idx="8" position="0,0,0.5" look_at="0.0,0.0,0.125" up="1,0,0" lens_focal_length="40" />
+      </camera>
+    </qt-opengl>
+  </visualization>
+
+</argos-configuration>
