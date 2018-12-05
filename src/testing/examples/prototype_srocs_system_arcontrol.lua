@@ -21,7 +21,7 @@ function step()
 	_manipulator_state = step_manipulator()
 	-- step the finite state machine
 	if _state == "begin" then
-		set_speed(3,3)
+		set_speed(3,-3)
 		_state = "forwards"
 	elseif _state == "forwards" then
 		if robot.proximity[15] > 0.99 and robot.proximity[16] > 0.99 then			

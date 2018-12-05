@@ -14,7 +14,7 @@
         <joints implementation="default">
           <joint id="base_wheel_left" mode="velocity" max_impulse="0.05"/>
           <joint id="base_wheel_right" mode="velocity" max_impulse="0.05"/>
-          <joint id="lifter_vertical_link" mode="velocity" max_impulse="0.5"/>
+          <joint id="lifter_vertical_link" mode="velocity" max_impulse="0.05"/>
         </joints>
         <magnets implementation="default"/>
       </actuators>
@@ -60,21 +60,21 @@
       <controller config="builderbot_controller"/>
       <links ref="base">
         <!-- base body -->
-        <link id="base" geometry="box" size="0.13,0.14,0.039" mass="0.6"
+        <link id="base" geometry="box" size="0.13,0.14,0.039" mass="0.5"
               position="-0.015,0,0.002"/>
 
         <!-- wheels -->
-        <link id="wheel_right" geometry="cylinder" radius="0.02" height="0.015" mass="0.0005"
+        <link id="wheel_right" geometry="cylinder" radius="0.02" height="0.015" mass="0.10"
               position="0,-0.0675,0.02" orientation="0,0,-90"/>
-        <link id="wheel_left" geometry="cylinder" radius="0.02" height="0.015" mass="0.0005"
+        <link id="wheel_left" geometry="cylinder" radius="0.02" height="0.015" mass="0.100"
               position="0,0.0525,0.02" orientation="0,0,-90"/>
-        <link id="pivot_front" geometry="sphere" radius="0.01999"
-              mass="0.0005" position="0.03,0,0" orientation="0,0,0" />
-        <link id="pivot_back" geometry="sphere" radius="0.02"
-              mass="0.0005" position="-0.06,0,0" orientation="0,0,0" />
+        <link id="pivot_front" geometry="sphere" radius="0.02" mass="0.10" 
+              position="0.03,0.0,0" orientation="0,0,0" />
+        <link id="pivot_back" geometry="sphere" radius="0.02" mass="0.10" 
+              position="-0.06,0,0" orientation="0,0,0" />
 
         <!-- upper base body -->
-        <link id="upper_base" geometry="convexhull" mass="0.06"
+        <link id="upper_base" geometry="convexhull" mass="0.6"
               position="-0.015,0,0.041">
               <point position=" 0.039, 0.065, 0"/>
               <point position="-0.039, 0.065, 0"/>
@@ -111,13 +111,13 @@
 
         <!-- for devices delete when modelling -->
         <!-- magnets -->
-        <link id="electromagnet_q1" geometry="cylinder" radius="0.010" height="0.023500" mass="0.0010"
+        <link id="electromagnet_q1" geometry="cylinder" radius="0.010" height="0.023500" mass="0.20"
               position="0.118,0.023000,0.06"/>
-        <link id="electromagnet_q2" geometry="cylinder" radius="0.010" height="0.023500" mass="0.0010"
+        <link id="electromagnet_q2" geometry="cylinder" radius="0.010" height="0.023500" mass="0.20"
               position="0.072,0.023000,0.06"/>
-        <link id="electromagnet_q3" geometry="cylinder" radius="0.010" height="0.023500" mass="0.0010"
+        <link id="electromagnet_q3" geometry="cylinder" radius="0.010" height="0.023500" mass="0.20"
               position="0.118,-0.023000,0.06"/>
-        <link id="electromagnet_q4" geometry="cylinder" radius="0.010" height="0.023500" mass="0.0010"
+        <link id="electromagnet_q4" geometry="cylinder" radius="0.010" height="0.023500" mass="0.20"
               position="0.072,-0.023000,0.06"/>
       </links>
       <joints>
@@ -131,7 +131,7 @@
           <child link="wheel_left" position="0,0,0" orientation="0,0,0"/>
         </joint>
         <joint id="base_pivot_front" type="spherical">
-          <parent link="base" position="0.03,0,0.018" orientation="0,0,0"/>
+          <parent link="base" position="0.045,0.00,0.018" orientation="0,0,0"/>
           <child link="pivot_front" position="0,0,0.02" orientation="0,0,0"/>
         </joint>
         <joint id="base_pivot_back" type="spherical">
@@ -200,7 +200,7 @@
     </distribute-->
 
 
-	<!--***********************************************-->
+  <!--***********************************************-->
         <prototype id="sblock0" movable="true">
           <body position="0.10,0,0" orientation="0,0,0" />
           <links ref="block">
@@ -333,7 +333,7 @@
             </radios>
           </devices>
         </prototype>
-	<!--***********************************************-->
+  <!--***********************************************-->
  
   </arena>
 

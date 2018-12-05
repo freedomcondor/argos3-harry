@@ -49,7 +49,7 @@ end
      automatically by ARGoS. ]]
 function reset()
 	robot.joints.base_wheel_left.set_target(1)
-	robot.joints.base_wheel_right.set_target(1)
+	robot.joints.base_wheel_right.set_target(-1)
 end
 
 

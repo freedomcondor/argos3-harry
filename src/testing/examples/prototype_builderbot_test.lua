@@ -7,11 +7,11 @@
 
 -- Put your global variables here
 
-
+local _manipulator_target
 
 --[[ This function is executed every time you press the 'execute' button ]]
 function init()
-	reset()
+   reset()
 end
 
 
@@ -19,9 +19,15 @@ end
 --[[ This function is executed at each time step
      It must contain the logic of your controller ]]
 function step()
-	log(robot.id, ": speed = " ..
-		 string.format("%.2f", robot.joints.base_wheel_left.encoder) .. ", " ..
-		 string.format("%.2f", robot.joints.base_wheel_right.encoder))
+   _manipulator_state = step_manipulator()
+   log(robot.id, ": speed = " ..
+      string.format("%.2f", robot.joints.base_wheel_left.encoder) .. ", " ..
+      string.format("%.2f", robot.joints.base_wheel_right.encoder))
+   if _manipulator_state == "idle" then
+      _manipulator_target = 0.07
+      robot.joints.base_wheel_left.set_target(3)
+      robot.joints.base_wheel_right.set_target(3)
+   end
 end
 
 
@@ -32,8 +38,7 @@ end
      called. The state of sensors and actuators is reset
      automatically by ARGoS. ]]
 function reset()
-	robot.joints.base_wheel_left.set_target(3)
-	robot.joints.base_wheel_right.set_target(-1)
+   _manipulator_target = 0
 end
 
 
@@ -42,4 +47,37 @@ end
      from the simulation ]]
 function destroy()
    -- put your code here
+end
+
+--------------------------------------------
+
+function set_electromagnet_current(target)
+   robot.magnets.magnet_0.set_current(target)
+   robot.magnets.magnet_1.set_current(target)
+   robot.magnets.magnet_2.set_current(target)
+   robot.magnets.magnet_3.set_current(target)
+end
+
+function step_manipulator()
+   local position = robot.joints.lifter_vertical_link.encoder
+   local set_velocity = robot.joints.lifter_vertical_link.set_target
+   local manipulator_speed = 0.03
+
+   log(robot.id, " position  = " .. position)
+
+   if math.abs(_manipulator_target - position) < 0.01 then
+      manipulator_speed = math.abs(_manipulator_target - position) * 3
+   end
+
+   if math.abs(_manipulator_target - position) > 0.005 then
+      if _manipulator_target > position then
+         set_velocity(manipulator_speed)
+      else
+         set_velocity(-manipulator_speed)
+      end
+      return "active"
+   else
+      set_velocity(0.0)
+      return "idle"
+   end
 end

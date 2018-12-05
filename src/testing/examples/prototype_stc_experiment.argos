@@ -81,6 +81,8 @@
           <links ref="base">
             <link id="base" geometry="cylinder" radius="0.025" height="0.02" mass="1"
                   position="0,0,0.01" orientation="0,0,0" />
+            <link id="head" geometry="cylinder" radius="0.005" height="0.02" mass="0.5"
+                  position="0.02,0.01,0.03" orientation="0,0,0" />
             <link id="wheel_left" geometry="cylinder" radius="0.01" height=".005"
                   mass=".05" position="0,.015,0.01" orientation="0,0,-90" />
             <link id="wheel_right" geometry="cylinder" radius="0.01" height=".005"
@@ -91,6 +93,10 @@
                   mass=".05" position="-0.015,0,0" orientation="0,0,0" />
           </links>
           <joints>
+            <joint id="base_head" type="revolute" axis="0,0,1">
+              <parent link="base" position="0.02,0.01,0.02" orientation="0,0,0"/>
+              <child link="head" position="0,0,0" orientation="0,0,0"/>
+            </joint>
             <joint id="base_wheel_right" type="revolute" axis="0,0,1">
               <parent link="base" position="0,-.015,0" orientation="0,0,90"/>
               <child link="wheel_right" position="0,0,0" orientation="0,0,0"/>
