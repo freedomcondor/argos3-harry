@@ -1,0 +1,762 @@
+From dd3019fc40075cab1818ae4b7acee84e20b7ebfc Mon Sep 17 00:00:00 2001
+From: Michael Allwright <allsey87@gmail.com>
+Date: Fri, 7 Dec 2018 15:08:55 +0100
+Subject: [PATCH] generic: Add the tag actuator
+
+---
+ src/plugins/robots/generic/CMakeLists.txt     |  12 +-
+ .../control_interface/ci_tags_actuator.cpp    | 104 +++++++
+ .../control_interface/ci_tags_actuator.h      |  64 +++++
+ .../simulator/tags_default_actuator.cpp       |  88 ++++++
+ .../generic/simulator/tags_default_actuator.h |  49 ++++
+ .../examples/prototype_vns_experiment.argos   | 263 ++++++++++++++++++
+ .../examples/prototype_vns_quadcopter.lua     |  38 +++
+ .../examples/prototype_vns_vehicle.lua        |  44 +++
+ 8 files changed, 658 insertions(+), 4 deletions(-)
+ create mode 100644 src/plugins/robots/generic/control_interface/ci_tags_actuator.cpp
+ create mode 100644 src/plugins/robots/generic/control_interface/ci_tags_actuator.h
+ create mode 100644 src/plugins/robots/generic/simulator/tags_default_actuator.cpp
+ create mode 100644 src/plugins/robots/generic/simulator/tags_default_actuator.h
+ create mode 100644 src/testing/examples/prototype_vns_experiment.argos
+ create mode 100644 src/testing/examples/prototype_vns_quadcopter.lua
+ create mode 100644 src/testing/examples/prototype_vns_vehicle.lua
+
+diff --git a/src/plugins/robots/generic/CMakeLists.txt b/src/plugins/robots/generic/CMakeLists.txt
+index 5e76a59..b5d9033 100644
+--- a/src/plugins/robots/generic/CMakeLists.txt
++++ b/src/plugins/robots/generic/CMakeLists.txt
+@@ -28,7 +28,8 @@ set(ARGOS3_HEADERS_PLUGINS_ROBOTS_GENERIC_CONTROLINTERFACE
+   control_interface/ci_radios_actuator.h
+   control_interface/ci_radios_sensor.h
+   control_interface/ci_range_and_bearing_actuator.h
+-  control_interface/ci_range_and_bearing_sensor.h)
++  control_interface/ci_range_and_bearing_sensor.h
++  control_interface/ci_tags_actuator.h)
+ 
+ if(ARGOS_BUILD_FOR_SIMULATOR)
+   # argos3/plugins/robots/generic/simulator
+@@ -56,7 +57,8 @@ if(ARGOS_BUILD_FOR_SIMULATOR)
+     simulator/radios_default_actuator.h
+     simulator/radios_default_sensor.h
+     simulator/range_and_bearing_default_actuator.h
+-    simulator/range_and_bearing_medium_sensor.h)
++    simulator/range_and_bearing_medium_sensor.h
++    simulator/tags_default_actuator.h)
+ endif(ARGOS_BUILD_FOR_SIMULATOR)
+ 
+ #
+@@ -88,7 +90,8 @@ set(ARGOS3_SOURCES_PLUGINS_ROBOTS_GENERIC
+   control_interface/ci_radios_actuator.cpp
+   control_interface/ci_radios_sensor.cpp
+   control_interface/ci_range_and_bearing_actuator.cpp
+-  control_interface/ci_range_and_bearing_sensor.cpp)
++  control_interface/ci_range_and_bearing_sensor.cpp
++  control_interface/ci_tags_actuator.cpp)
+ if(ARGOS_BUILD_FOR_SIMULATOR)
+   set(ARGOS3_SOURCES_PLUGINS_ROBOTS_GENERIC
+     ${ARGOS3_SOURCES_PLUGINS_ROBOTS_GENERIC}
+@@ -115,7 +118,8 @@ if(ARGOS_BUILD_FOR_SIMULATOR)
+     simulator/radios_default_actuator.cpp
+     simulator/radios_default_sensor.cpp
+     simulator/range_and_bearing_default_actuator.cpp
+-    simulator/range_and_bearing_medium_sensor.cpp)
++    simulator/range_and_bearing_medium_sensor.cpp
++    simulator/tags_default_actuator.cpp)
+ endif(ARGOS_BUILD_FOR_SIMULATOR)
+ 
+ #
+diff --git a/src/plugins/robots/generic/control_interface/ci_tags_actuator.cpp b/src/plugins/robots/generic/control_interface/ci_tags_actuator.cpp
+new file mode 100644
+index 0000000..be6d8e0
+--- /dev/null
++++ b/src/plugins/robots/generic/control_interface/ci_tags_actuator.cpp
+@@ -0,0 +1,104 @@
++/**
++ * @file <argos3/plugins/robots/generic/control_interface/ci_tags_actuator.cpp>
++ *
++ * @author Michael Allwright <allsey87@gmail.com>
++ */
++
++#include "ci_tags_actuator.h"
++
++#ifdef ARGOS_WITH_LUA
++#include <argos3/core/wrappers/lua/lua_utility.h>
++#endif
++
++namespace argos {
++
++   /****************************************/
++   /****************************************/
++
++#ifdef ARGOS_WITH_LUA
++   /*
++    * This function expects the stack to have two arguments. The first argument 
++    * must always be the index of the tag to set. The second argument is a
++    * string that represents the payload of the tag.
++    */
++   int LuaTagSetSinglePayload(lua_State* pt_lua_state) {
++      /* Check parameters */
++      if(lua_gettop(pt_lua_state) != 2) {
++         return luaL_error(pt_lua_state, "robot.tags.set_single_payload() expects 2 arguments");
++      }
++      luaL_checktype(pt_lua_state, 1, LUA_TNUMBER);
++      size_t unIdx = lua_tonumber(pt_lua_state, 1);
++      /* Get reference to actuator */
++      CCI_TagsActuator* pcTagActuator = 
++         CLuaUtility::GetDeviceInstance<CCI_TagsActuator>(pt_lua_state, "tags");
++      if(unIdx < 1 || unIdx > pcTagActuator->GetNumTags()) {
++         return luaL_error(pt_lua_state,
++                           "passed index %d out of bounds [1,%d]", 
++                           unIdx, pcTagActuator->GetNumTags());
++      }
++      luaL_checktype(pt_lua_state, 2, LUA_TSTRING);
++      /* Perform action */
++      pcTagActuator->SetSinglePayload(unIdx - 1, lua_tostring(pt_lua_state, 2));
++      return 0;
++   }
++
++   /*
++    * This function expects the stack to have one arguments, a string
++    * that represents the payload of the tag
++    */
++   int LuaTagSetAllPayloads(lua_State* pt_lua_state) {
++      /* Check parameters */
++      if(lua_gettop(pt_lua_state) != 1) {
++         return luaL_error(pt_lua_state, "robot.tags.set_all_payloads() expects 1 argument");
++      }
++      luaL_checktype(pt_lua_state, 1, LUA_TSTRING);
++      /* Get reference to actuator */
++      CCI_TagsActuator* pcTagActuator = 
++         CLuaUtility::GetDeviceInstance<CCI_TagsActuator>(pt_lua_state, "tags");
++      /* Perform action */
++      pcTagActuator->SetAllPayloads(lua_tostring(pt_lua_state, 1));
++      return 0;
++   }
++#endif
++
++   /****************************************/
++   /****************************************/
++
++   size_t CCI_TagsActuator::GetNumTags() const {
++     return m_tSettings.size();
++   }
++
++   /****************************************/
++   /****************************************/
++
++   void CCI_TagsActuator::SetSinglePayload(UInt32 un_tag_number,
++                                         const std::string& str_payload) {
++      m_tSettings[un_tag_number] = str_payload;
++   }
++      
++   /****************************************/
++   /****************************************/
++
++   void CCI_TagsActuator::SetAllPayloads(const std::string& str_payload) {
++      for(size_t i = 0; i < m_tSettings.size(); ++i) {
++         m_tSettings[i] = str_payload;
++      }
++   }
++
++   /****************************************/
++   /****************************************/
++
++#ifdef ARGOS_WITH_LUA
++   void CCI_TagsActuator::CreateLuaState(lua_State* pt_lua_state) {
++      CLuaUtility::OpenRobotStateTable(pt_lua_state, "tags");
++      CLuaUtility::AddToTable(pt_lua_state, "_instance", this);
++      CLuaUtility::AddToTable(pt_lua_state, "set_single_payload", &LuaTagSetSinglePayload);
++      CLuaUtility::AddToTable(pt_lua_state, "set_all_payloads", &LuaTagSetAllPayloads);
++      CLuaUtility::CloseRobotStateTable(pt_lua_state);
++   }
++#endif
++
++   /****************************************/
++   /****************************************/
++
++}
+diff --git a/src/plugins/robots/generic/control_interface/ci_tags_actuator.h b/src/plugins/robots/generic/control_interface/ci_tags_actuator.h
+new file mode 100644
+index 0000000..35a5a63
+--- /dev/null
++++ b/src/plugins/robots/generic/control_interface/ci_tags_actuator.h
+@@ -0,0 +1,64 @@
++/**
++ * @file <argos3/plugins/robots/generic/control_interface/ci_tags_actuator.h>
++ *
++ * @author Michael Allwright <allsey87@gmail.com>
++ */
++
++#ifndef CCI_TAGS_ACTUATOR_H
++#define CCI_TAGS_ACTUATOR_H
++
++namespace argos {
++   class CCI_TagsActuator;
++}
++
++#include <argos3/core/control_interface/ci_actuator.h>
++
++namespace argos {
++
++   class CCI_TagsActuator : public CCI_Actuator {
++
++   public:
++
++      typedef std::vector<std::string> TSettings;
++
++   public:
++
++      CCI_TagsActuator() {}
++
++      virtual ~CCI_TagsActuator() {}
++
++      /**
++       * @brief Returns the number of tags
++       */
++      size_t GetNumTags() const;
++
++      /**
++       * @brief Sets the payload of a single tag.
++       *
++       * @param un_tag_number Tag that must be set
++       * @param str_payload Payload to set
++       */
++      virtual void SetSinglePayload(UInt32 un_tag_number,
++                                    const std::string& str_payload);
++      
++      /**
++       * @brief Sets all the tags with the same payload.
++       *
++       * @param str_payload Payload to set
++       */
++      virtual void SetAllPayloads(const std::string& str_payload);
++
++
++#ifdef ARGOS_WITH_LUA
++      virtual void CreateLuaState(lua_State* pt_lua_state);
++#endif
++
++   protected:
++
++      TSettings m_tSettings;
++
++   };
++
++}
++
++#endif
+diff --git a/src/plugins/robots/generic/simulator/tags_default_actuator.cpp b/src/plugins/robots/generic/simulator/tags_default_actuator.cpp
+new file mode 100644
+index 0000000..20ce857
+--- /dev/null
++++ b/src/plugins/robots/generic/simulator/tags_default_actuator.cpp
+@@ -0,0 +1,88 @@
++/**
++ * @file <argos3/plugins/robots/generic/simulator/tags_default_actuator.cpp>
++ *
++ * @author Michael Allwright - <allsey87@gmail.com>
++ */
++
++#include "tags_default_actuator.h"
++#include <argos3/core/simulator/simulator.h>
++#include <argos3/plugins/simulator/media/tag_medium.h>
++
++namespace argos {
++
++   /****************************************/
++   /****************************************/
++
++   CTagsDefaultActuator::CTagsDefaultActuator() :
++      m_pcTagEquippedEntity(nullptr) {}
++
++   /****************************************/
++   /****************************************/
++
++   void CTagsDefaultActuator::SetRobot(CComposableEntity& c_entity) {
++      m_pcTagEquippedEntity = 
++         &(c_entity.GetComponent<CTagEquippedEntity>("tags"));
++      m_tSettings.resize(m_pcTagEquippedEntity->GetInstances().size());
++   }
++
++   /****************************************/
++   /****************************************/
++
++   void CTagsDefaultActuator::Init(TConfigurationNode& t_tree) {
++      try {
++         CCI_TagsActuator::Init(t_tree);
++      }
++      catch(CARGoSException& ex) {
++         THROW_ARGOSEXCEPTION_NESTED("Error initializing the tags default actuator", ex);
++      }
++   }
++
++   /****************************************/
++   /****************************************/
++
++   void CTagsDefaultActuator::Update() {
++      m_pcTagEquippedEntity->SetTagPayloads(m_tSettings);
++   }
++
++   /****************************************/
++   /****************************************/
++
++   void CTagsDefaultActuator::Reset() {
++      SetAllPayloads("");
++   }
++
++   /****************************************/
++   /****************************************/
++
++   REGISTER_ACTUATOR(CTagsDefaultActuator,
++                     "tags", "default",
++                     "Michael Allwright [allsey87@gmail.com]",
++                     "1.0",
++                     "The tags actuator.",
++                     "This actuator controls the payloads of a group of tags. The idea"
++                     "is to represent an LCD screen that displays different tags. For a"
++                     "complete description of its usage, refer to the ci_tags_actuator.h"
++                     " file.\n\n"
++                     "REQUIRED XML CONFIGURATION\n\n"
++                     "  <controllers>\n"
++                     "    ...\n"
++                     "    <my_controller ...>\n"
++                     "      ...\n"
++                     "      <actuators>\n"
++                     "        ...\n"
++                     "        <tags implementation=\"default\" />\n"
++                     "        ...\n"
++                     "      </actuators>\n"
++                     "      ...\n"
++                     "    </my_controller>\n"
++                     "    ...\n"
++                     "  </controllers>\n\n"
++                     "OPTIONAL XML CONFIGURATION\n\n"
++                     "None.\n",
++                     "Usable"
++   );
++
++   /****************************************/
++   /****************************************/
++
++}
+diff --git a/src/plugins/robots/generic/simulator/tags_default_actuator.h b/src/plugins/robots/generic/simulator/tags_default_actuator.h
+new file mode 100644
+index 0000000..e3202e0
+--- /dev/null
++++ b/src/plugins/robots/generic/simulator/tags_default_actuator.h
+@@ -0,0 +1,49 @@
++/**
++ * @file <argos3/plugins/robots/generic/simulator/tags_default_actuator.h>
++ *
++ * @author Michael Allwright - <allsey87@gmail.com>
++ */
++
++#ifndef TAGS_DEFAULT_ACTUATOR_H
++#define TAGS_DEFAULT_ACTUATOR_H
++
++#include <string>
++#include <map>
++
++namespace argos {
++   class CTagsDefaultActuator;
++   class CTagMedium;
++}
++
++#include <argos3/plugins/robots/generic/control_interface/ci_tags_actuator.h>
++#include <argos3/plugins/simulator/entities/tag_equipped_entity.h>
++#include <argos3/core/simulator/actuator.h>
++
++namespace argos {
++
++   class CTagsDefaultActuator : public CSimulatedActuator,
++                                public CCI_TagsActuator {
++
++   public:
++
++      CTagsDefaultActuator();
++
++      virtual ~CTagsDefaultActuator() {}
++
++      virtual void SetRobot(CComposableEntity& c_entity);
++
++      virtual void Init(TConfigurationNode& t_tree);
++
++      virtual void Update();
++
++      virtual void Reset();
++
++   private:
++
++      CTagEquippedEntity* m_pcTagEquippedEntity;
++
++   };
++
++}
++
++#endif
+diff --git a/src/testing/examples/prototype_vns_experiment.argos b/src/testing/examples/prototype_vns_experiment.argos
+new file mode 100644
+index 0000000..85ef011
+--- /dev/null
++++ b/src/testing/examples/prototype_vns_experiment.argos
+@@ -0,0 +1,263 @@
++<?xml version="1.0" ?>
++<argos-configuration>
++
++  <!-- ************************* -->
++  <!-- * General configuration * -->
++  <!-- ************************* -->
++  <framework>
++    <experiment length="0" ticks_per_second="25" random_seed="324646"/>
++  </framework>
++
++  <!-- *************** -->
++  <!-- * Controllers * -->
++  <!-- *************** -->
++  <controllers>
++    <lua_controller id="vehicle_controller">
++      <actuators>
++        <joints implementation="default">
++          <joint id="base_wheel_left" mode="velocity" max_impulse="0.005"/>
++          <joint id="base_wheel_right" mode="velocity" max_impulse="0.005"/>
++        </joints>
++        <radios implementation="default"/>
++        <tags implementation="default"/>
++      </actuators>
++      <sensors>
++        <joints implementation="default">
++          <joint id="base_wheel_left" mode="velocity"/>
++          <joint id="base_wheel_right" mode="velocity"/>
++        </joints>
++        <radios implementation="default" show_rays="true"/>
++        <proximity implementation="default" show_rays="true"/>
++      </sensors>
++      <params script="src/testing/examples/prototype_vns_vehicle.lua" />
++    </lua_controller>
++
++    <lua_controller id="quadcopter_controller">
++      <actuators>
++        <radios implementation="default"/>
++        <joints implementation="default">
++          <joint id="axis0_axis1" mode="velocity" max_impulse="0.001"/>
++          <joint id="axis1_axis2" mode="velocity" max_impulse="0.001"/>
++          <joint id="axis2_body" mode="velocity" max_impulse="0.001"/>
++        </joints>
++      </actuators>
++      <sensors>
++        <cameras implementation="default" show_frustum="true">
++          <camera id="fixed_camera" range="0.01:0.25" resolution="640,480"
++                  anchor="body" position="0,0,0" orientation="0,0,180"
++                  focal_length="600,600" principle_point="320,240">
++            <led_detector medium="leds" show_rays="true"/>
++            <tag_detector medium="apriltags" show_rays="true"/>
++          </camera>
++        </cameras>
++        <radios implementation="default" show_rays="true"/>
++      </sensors>
++      <params script="src/testing/examples/prototype_vns_quadcopter.lua" />
++    </lua_controller>
++
++  </controllers>
++
++  <!-- *********************** -->
++  <!-- * Arena configuration * -->
++  <!-- *********************** -->
++  <arena size="1, 1, 0.5" center="0, 0, 0.125">
++    <box id="bn" size="0.025,0.975,0.05" movable="false" mass="10">
++      <body position="0.4875,0.0125,0"  orientation="0,0,0" />
++    </box>
++    <box id="be" size="0.975,0.025,0.05" movable="false" mass="10">
++      <body position="0.0125,-0.4875,0"  orientation="0,0,0" />
++    </box>
++    <box id="bs" size="0.025,0.975,0.05" movable="false" mass="10">
++      <body position="-0.4875,-0.0125,0"  orientation="0,0,0" />
++    </box>
++    <box id="bw" size="0.975,0.025,0.05" movable="false" mass="10">
++      <body position="-0.0125,0.4875,0"  orientation="0,0,0" />
++    </box>
++
++    <!-- vehicles -->
++    <distribute>
++      <position method="uniform" min="-0.4,-0.4,0" max="0.4,0.4,0" />
++      <orientation method="uniform" min="0,0,0" max="360,0,0" />
++      <entity quantity="5" max_trials="100">
++        <prototype id="vehicle" movable="true">
++          <body position="0,0,0" orientation="0,0,0" />
++          <controller config="vehicle_controller"/>
++          <links ref="base">
++            <link id="base" geometry="cylinder" radius="0.025" height="0.02" mass="1"
++                  position="0,0,0.01" orientation="0,0,0" />
++            <link id="wheel_left" geometry="cylinder" radius="0.01" height=".005"
++                  mass=".05" position="0,.015,0.01" orientation="0,0,-90" />
++            <link id="wheel_right" geometry="cylinder" radius="0.01" height=".005"
++                  mass=".05" position="0,-.015,0.01" orientation="0,0,90" />
++            <link id="pivot_front" geometry="sphere" radius="0.01"
++                  mass=".05" position="0.015,0,0" orientation="0,0,0" />
++            <link id="pivot_back" geometry="sphere" radius="0.01"
++                  mass=".05" position="-0.015,0,0" orientation="0,0,0" />
++          </links>
++          <joints>
++            <joint id="base_wheel_right" type="revolute" axis="0,0,1">
++              <parent link="base" position="0,-.015,0" orientation="0,0,90"/>
++              <child link="wheel_right" position="0,0,0" orientation="0,0,0"/>
++            </joint>
++            <joint id="base_wheel_left" type="revolute" axis="0,0,1">
++              <parent link="base" position="0,.015,0" orientation="0,0,-90"/>
++              <child link="wheel_left" position="0,0,0" orientation="0,0,0"/>
++            </joint>
++            <joint id="base_pivot_front" type="spherical">
++              <parent link="base" position="0.015,0,0" orientation="0,0,0"/>
++              <child link="pivot_front" position="0,0,0.01" orientation="0,0,0"/>
++            </joint>
++            <joint id="base_pivot_back" type="spherical">
++              <parent link="base" position="-0.015,0,0" orientation="0,0,0"/>
++              <child link="pivot_back" position="0,0,0.01" orientation="0,0,0"/>
++            </joint>
++          </joints>
++          <devices>
++            <radios medium="zigbee">
++              <radio anchor="base" position="0,0,0.02" range="1"/>
++            </radios>
++            <tags medium="apriltags">
++              <tag anchor="base" observable_angle="75" side_length="0.02"
++                   position="0.000,0.000,0.0205" orientation="0,0,0"/>
++            </tags>
++            <proximity_sensors>
++              <sensor anchor="base" offset="0.026,0.000,0.01" direction="1.000,0.000,0" range="0.05" />
++              <sensor anchor="base" offset="0.022,0.013,0.01" direction="0.866,0.500,0" range="0.05" />
++              <sensor anchor="base" offset="0.013,0.022,0.01" direction="0.500,0.866,0" range="0.05" />
++              <sensor anchor="base" offset="0.000,0.026,0.01" direction="0.000,1.000,0" range="0.05" />
++              <sensor anchor="base" offset="-0.013,0.022,0.01" direction="-0.500,0.866,0" range="0.05" />
++              <sensor anchor="base" offset="-0.022,0.013,0.01" direction="-0.866,0.500,0" range="0.05" />
++              <sensor anchor="base" offset="-0.026,0.000,0.01" direction="-1.000,0.000,0" range="0.05" />
++              <sensor anchor="base" offset="-0.022,-0.013,0.01" direction="-0.866,-0.500,0" range="0.05" />
++              <sensor anchor="base" offset="-0.013,-0.022,0.01" direction="-0.500,-0.866,0" range="0.05" />
++              <sensor anchor="base" offset="0.000,-0.026,0.01" direction="0.000,-1.000,0" range="0.05" />
++              <sensor anchor="base" offset="0.013,-0.022,0.01" direction="0.500,-0.866,0" range="0.05" />
++              <sensor anchor="base" offset="0.022,-0.013,0.01" direction="0.866,-0.500,0" range="0.05" />
++            </proximity_sensors>
++          </devices>
++        </prototype>
++      </entity>
++    </distribute>
++
++    <!-- quadcopters -->
++    <prototype id="quadcopter0" movable="false">
++      <body position="0,0,0.2" orientation="0,0,0" />
++      <controller config="quadcopter_controller"/>
++      <links ref="axis0">
++        <link id="axis0" geometry="sphere" radius="0" mass="0.001"
++              position="0,0,0" orientation="0,0,0" />
++        <link id="axis1" geometry="sphere" radius="0" mass="0.001"
++              position="0,0,0" orientation="0,0,0" />
++        <link id="axis2" geometry="sphere" radius="0" mass="0.001"
++              position="0,0,0" orientation="0,0,0" />
++        <link id="body" geometry="cylinder" radius="0.025" height="0.01" mass="1"
++              position="0,0,0" orientation="0,0,0" />
++      </links>
++      <joints>
++        <joint id="axis0_axis1" type="prismatic" axis="1,0,0" limit="-0.45:0.45">
++          <parent link="axis0" position="0,0,0" orientation="0,0,0"/>
++          <child link="axis1" position="0,0,0" orientation="0,0,0"/>
++        </joint>
++        <joint id="axis1_axis2" type="prismatic" axis="0,1,0" limit="-0.45:0.45">
++          <parent link="axis1" position="0,0,0" orientation="0,0,0"/>
++          <child link="axis2" position="0,0,0" orientation="0,0,0"/>
++        </joint>
++        <joint id="axis2_body" type="revolute" axis="0,0,1">
++          <parent link="axis2" position="0,0,0" orientation="0,0,0"/>
++          <child link="body" position="0,0,0" orientation="0,0,0"/>
++        </joint>
++      </joints>
++      <devices>
++        <radios medium="zigbee">
++          <radio anchor="body" position="0,0,0" range="1"/>
++        </radios>
++      </devices>
++    </prototype>
++
++    <prototype id="quadcopter1" movable="false">
++      <body position="0,0,0.15" orientation="0,0,0" />
++      <controller config="quadcopter_controller"/>
++      <links ref="axis0">
++        <link id="axis0" geometry="sphere" radius="0" mass="0.001"
++              position="0,0,0" orientation="0,0,0" />
++        <link id="axis1" geometry="sphere" radius="0" mass="0.001"
++              position="0,0,0" orientation="0,0,0" />
++        <link id="axis2" geometry="sphere" radius="0" mass="0.001"
++              position="0,0,0" orientation="0,0,0" />
++        <link id="body" geometry="cylinder" radius="0.025" height="0.01" mass="1"
++              position="0,0,0" orientation="0,0,0" />
++      </links>
++      <joints>
++        <joint id="axis0_axis1" type="prismatic" axis="1,0,0" limit="-0.45:0.45">
++          <parent link="axis0" position="0,0,0" orientation="0,0,0"/>
++          <child link="axis1" position="0,0,0" orientation="0,0,0"/>
++        </joint>
++        <joint id="axis1_axis2" type="prismatic" axis="0,1,0" limit="-0.45:0.45">
++          <parent link="axis1" position="0,0,0" orientation="0,0,0"/>
++          <child link="axis2" position="0,0,0" orientation="0,0,0"/>
++        </joint>
++        <joint id="axis2_body" type="revolute" axis="0,0,1">
++          <parent link="axis2" position="0,0,0" orientation="0,0,0"/>
++          <child link="body" position="0,0,0" orientation="0,0,0"/>
++        </joint>
++      </joints>
++      <devices>
++        <radios medium="zigbee">
++          <radio anchor="body" position="0,0,0" range="1"/>
++        </radios>
++      </devices>
++    </prototype>
++
++    <!-- blocks -->
++    <distribute>
++      <position method="uniform" min="-0.4,-0.4,0" max="0.4,0.4,0" />
++      <orientation method="uniform" min="0,0,0" max="360,0,0" />
++      <entity quantity="10" max_trials="100">
++        <box id="b0" size="0.04,0.04,0.02" movable="true" mass="0.05">
++          <leds medium="leds">
++            <led color="red" anchor="origin" offset="0,0,0.021"/>
++          </leds>
++        </box>
++      </entity>
++    </distribute>
++
++  </arena>
++
++  <!-- ******************* -->
++  <!-- * Physics engines * -->
++  <!-- ******************* -->
++  <physics_engines>
++    <dynamics3d id="dyn3d" iterations="20">
++      <floor height="0.01"/>
++      <gravity g="9.8" />
++    </dynamics3d>
++  </physics_engines>
++
++  <!-- ********* -->
++  <!-- * Media * -->
++  <!-- ********* -->
++  <media>
++    <tag id="apriltags" index="grid" grid_size="20,20,20" />
++    <led id="leds" index="grid" grid_size="20,20,20" />
++    <radio id="zigbee" index="grid" grid_size="2,2,2" />
++  </media>
++  <!-- ****************** -->
++  <!-- * Visualization * -->
++  <!-- ****************** -->
++  <visualization>
++    <qt-opengl lua_editor="true">
++      <camera>
++        <placement idx="0" position=" 0,  -2.5,1" look_at="0,0,0.05" lens_focal_length="78" />
++        <placement idx="1" position=" 2.5,-2.5,1" look_at="0,0,0.05" lens_focal_length="92" />
++        <placement idx="2" position=" 2.5, 0,  1" look_at="0,0,0.05" lens_focal_length="78" />
++        <placement idx="3" position=" 2.5, 2.5,1" look_at="0,0,0.05" lens_focal_length="92" />
++        <placement idx="4" position=" 0,   2.5,1" look_at="0,0,0.05" lens_focal_length="78" />
++        <placement idx="5" position="-2.5, 2.5,1" look_at="0,0,0.05" lens_focal_length="92" />
++        <placement idx="6" position="-2.5, 0,  1" look_at="0,0,0.05" lens_focal_length="78" />
++        <placement idx="7" position="-2.5,-2.5,1" look_at="0,0,0.05" lens_focal_length="92" />
++        <placement idx="8" position="0,0,0.5" look_at="0.0,0.0,0.125" up="1,0,0" lens_focal_length="40" />
++      </camera>
++    </qt-opengl>
++  </visualization>
++
++</argos-configuration>
+diff --git a/src/testing/examples/prototype_vns_quadcopter.lua b/src/testing/examples/prototype_vns_quadcopter.lua
+new file mode 100644
+index 0000000..571c3d8
+--- /dev/null
++++ b/src/testing/examples/prototype_vns_quadcopter.lua
+@@ -0,0 +1,38 @@
++-- Put your global variables here
++
++
++
++--[[ This function is executed every time you press the 'execute' button ]]
++function init()
++	reset()
++end
++
++--[[ This function is executed at each time step
++     It must contain the logic of your controller ]]
++function step()
++end
++
++
++
++--[[ This function is executed every time you press the 'reset'
++     button in the GUI. It is supposed to restore the state
++     of the controller to whatever it was right after init() was
++     called. The state of sensors and actuators is reset
++     automatically by ARGoS. ]]
++function reset()
++    set_velocity(0.1,0.1,0.5)
++end
++
++
++
++--[[ This function is executed only once, when the robot is removed
++     from the simulation ]]
++function destroy()
++   -- put your code here
++end
++
++function set_velocity(x,y,theta)
++    robot.joints.axis0_axis1.set_target(x)
++    robot.joints.axis1_axis2.set_target(y)
++    robot.joints.axis2_body.set_target(theta)
++end
+diff --git a/src/testing/examples/prototype_vns_vehicle.lua b/src/testing/examples/prototype_vns_vehicle.lua
+new file mode 100644
+index 0000000..8f7cd48
+--- /dev/null
++++ b/src/testing/examples/prototype_vns_vehicle.lua
+@@ -0,0 +1,44 @@
++-- Use Shift + Click to select a robot
++-- When a robot is selected, its variables appear in this editor
++
++-- Use Ctrl + Click (Cmd + Click on Mac) to move a selected robot to a different location
++
++
++
++-- Put your global variables here
++-- str = "hi"
++
++
++--[[ This function is executed every time you press the 'execute' button ]]
++function init()
++	reset()
++end
++
++
++
++--[[ This function is executed at each time step
++     It must contain the logic of your controller ]]
++function step()
++--   str = str .. str
++--   robot.tags.set_all_payloads(str)
++
++end
++
++
++
++--[[ This function is executed every time you press the 'reset'
++     button in the GUI. It is supposed to restore the state
++     of the controller to whatever it was right after init() was
++     called. The state of sensors and actuators is reset
++     automatically by ARGoS. ]]
++function reset()
++
++end
++
++
++
++--[[ This function is executed only once, when the robot is removed
++     from the simulation ]]
++function destroy()
++   -- put your code here
++end
+-- 
+2.19.2
+
