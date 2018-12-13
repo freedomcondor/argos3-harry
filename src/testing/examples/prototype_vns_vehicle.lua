@@ -21,7 +21,26 @@ end
 function step()
 --   str = str .. str
 --   robot.tags.set_all_payloads(str)
+	local rx_data = robot.radios["radio_0"].rx_data
+	local deg
+	if #rx_data ~= 0 then
+		local sign = 1
+		if rx_data[1][1] == 2 then sign = -1 end
+		deg = sign * rx_data[1][2] 
 
+		local speed = 1
+		if deg < 5 and deg > -5 then
+			speed = 0.1
+		end
+		if deg < 2 and deg > -2 then
+			speed = 0
+		end
+		if deg > 0 then
+			setSpeed(speed,-speed)
+		else if deg < 0 then
+			setSpeed(-speed,speed)
+		end end
+	end
 end
 
 
@@ -41,4 +60,10 @@ end
      from the simulation ]]
 function destroy()
    -- put your code here
+end
+
+-------------------------------------------------------------------
+function setSpeed(x,y)
+	robot.joints.base_wheel_left.set_target(x)
+	robot.joints.base_wheel_right.set_target(-y)
 end

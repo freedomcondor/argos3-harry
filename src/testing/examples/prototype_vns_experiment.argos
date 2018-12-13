@@ -135,7 +135,7 @@
               <sensor anchor="base" offset="0.022,-0.013,0.01" direction="0.866,-0.500,0" range="0.05" />
             </proximity_sensors>
           </devices>
-        </prototype>
+        </prototype> 
       </entity>
     </distribute>
 
@@ -174,6 +174,7 @@
       </devices>
     </prototype>
 
+    <!-->
     <prototype id="quadcopter1" movable="false">
       <body position="0,0,0.15" orientation="0,0,0" />
       <controller config="quadcopter_controller"/>
@@ -207,6 +208,7 @@
         </radios>
       </devices>
     </prototype>
+    <-->
 
     <!-- blocks -->
     <distribute>
