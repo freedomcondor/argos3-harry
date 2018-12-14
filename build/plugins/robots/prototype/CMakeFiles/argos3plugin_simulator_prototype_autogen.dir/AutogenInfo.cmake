@@ -1,0 +1,33 @@
+# Directories and files
+set(AM_CMAKE_BINARY_DIR "/Users/harry/Desktop/argos3-harry/build/")
+set(AM_CMAKE_SOURCE_DIR "/Users/harry/Desktop/argos3-harry/src/")
+set(AM_CMAKE_CURRENT_SOURCE_DIR "/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/")
+set(AM_CMAKE_CURRENT_BINARY_DIR "/Users/harry/Desktop/argos3-harry/build/plugins/robots/prototype/")
+set(AM_CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE "")
+set(AM_BUILD_DIR "/Users/harry/Desktop/argos3-harry/build/plugins/robots/prototype/argos3plugin_simulator_prototype_autogen")
+set(AM_SOURCES "/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/control_interface/ci_prototype_joints_actuator.cpp;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/control_interface/ci_prototype_joints_sensor.cpp;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/dynamics3d_prototype_model.cpp;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_entity.cpp;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_joint_entity.cpp;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_joint_equipped_entity.cpp;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_joints_default_actuator.cpp;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_joints_default_sensor.cpp;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_link_entity.cpp;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_link_equipped_entity.cpp;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/qtopengl_prototype.cpp")
+set(AM_HEADERS "/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/control_interface/ci_prototype_joints_sensor.h;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/control_interface/ci_prototype_joints_actuator.h;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_joints_default_actuator.h;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_entity.h;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_joint_entity.h;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_joint_equipped_entity.h;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_link_entity.h;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_link_equipped_entity.h;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/dynamics3d_prototype_model.h;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype/simulator/prototype_joints_default_sensor.h")
+# Qt environment
+set(AM_QT_VERSION_MAJOR "5")
+set(AM_QT_MOC_EXECUTABLE "/usr/local/Cellar/qt/5.9.2/bin/moc")
+set(AM_QT_UIC_EXECUTABLE )
+set(AM_QT_RCC_EXECUTABLE )
+# MOC settings
+set(AM_MOC_SKIP "")
+set(AM_MOC_DEFINITIONS "ARGOS_simulator_BUILD;BT_NO_PROFILE=1;BT_USE_DOUBLE_PRECISION;HAVE_PTHREAD_H;QT_CORE_LIB;QT_GUI_LIB;QT_NO_DEBUG;QT_WIDGETS_LIB")
+set(AM_MOC_INCLUDES "/Users/harry/Desktop/argos3-harry/build/plugins/robots/prototype;/Users/harry/Desktop/argos3-harry/src/plugins/robots/prototype;/Users/harry/Desktop/argos3-harry/build/plugins/robots/prototype/argos3plugin_simulator_prototype_autogen/include;/Users/harry/Desktop/argos3-harry/src;/Users/harry/Desktop/argos3-harry/build;/usr/local/include;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers;/usr/local/Cellar/qt/5.9.2/lib/QtWidgets.framework;/usr/local/Cellar/qt/5.9.2/lib/QtWidgets.framework/Headers;/usr/local/Cellar/qt/5.9.2/lib/QtGui.framework;/usr/local/Cellar/qt/5.9.2/lib/QtGui.framework/Headers;/usr/local/Cellar/qt/5.9.2/lib/QtCore.framework;/usr/local/Cellar/qt/5.9.2/lib/QtCore.framework/Headers;/usr/local/Cellar/qt/5.9.2/./mkspecs/macx-clang;/Users/harry/Desktop/argos3-harry/src/plugins/simulator/physics_engines/dynamics3d/bullet;/Users/harry/Desktop/argos3-harry/src/plugins/simulator/physics_engines/dynamics3d/bullet/BulletCollision/BroadphaseCollision;/Users/harry/Desktop/argos3-harry/src/plugins/simulator/physics_engines/dynamics3d/bullet/BulletCollision/CollisionDispatch;/Users/harry/Desktop/argos3-harry/src/plugins/simulator/physics_engines/dynamics3d/bullet/BulletCollision/CollisionShapes;/Users/harry/Desktop/argos3-harry/src/plugins/simulator/physics_engines/dynamics3d/bullet/BulletCollision/Gimpact;/Users/harry/Desktop/argos3-harry/src/plugins/simulator/physics_engines/dynamics3d/bullet/BulletCollision/NarrowPhaseCollision;/Users/harry/Desktop/argos3-harry/src/plugins/simulator/physics_engines/dynamics3d/bullet/BulletDynamics/ConstraintSolver;/Users/harry/Desktop/argos3-harry/src/plugins/simulator/physics_engines/dynamics3d/bullet/BulletDynamics/Dynamics;/Users/harry/Desktop/argos3-harry/src/plugins/simulator/physics_engines/dynamics3d/bullet/BulletDynamics/Vehicle;/Users/harry/Desktop/argos3-harry/src/plugins/simulator/physics_engines/dynamics3d/bullet/BulletDynamics/Character;/Users/harry/Desktop/argos3-harry/src/plugins/simulator/physics_engines/dynamics3d/bullet/LinearMath;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/usr/include")
+set(AM_MOC_OPTIONS "")
+set(AM_MOC_RELAXED_MODE "FALSE")
+set(AM_MOC_DEPEND_FILTERS "")
+set(AM_MOC_PREDEFS_CMD "")
+# UIC settings
+set(AM_UIC_SKIP )
+set(AM_UIC_TARGET_OPTIONS )
+set(AM_UIC_OPTIONS_FILES )
+set(AM_UIC_OPTIONS_OPTIONS )
+set(AM_UIC_SEARCH_PATHS )
+# RCC settings
+set(AM_RCC_SOURCES  )
+set(AM_RCC_INPUTS )
+set(AM_RCC_OPTIONS_FILES )
+set(AM_RCC_OPTIONS_OPTIONS )

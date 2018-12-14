@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/harry/Desktop/argos3-harry/build/testing/test-client_autogen/mocs_compilation.cpp
+
+/Users/harry/Desktop/argos3-harry/src/argos3/core/utility/configuration/argos_exception.h
+stdexcept
+-
+sstream
+-
+
+/Users/harry/Desktop/argos3-harry/src/argos3/core/utility/datatypes/byte_array.h
+argos3/core/utility/datatypes/datatypes.h
+-
+argos3/core/utility/configuration/argos_exception.h
+-
+vector
+-
+iterator
+-
+unistd.h
+-
+
+/Users/harry/Desktop/argos3-harry/src/argos3/core/utility/datatypes/datatypes.h
+argos3/core/config.h
+-
+iostream
+-
+
+/Users/harry/Desktop/argos3-harry/src/argos3/core/utility/networking/tcp_socket.h
+argos3/core/utility/datatypes/byte_array.h
+-
+argos3/core/utility/datatypes/datatypes.h
+-
+
+/Users/harry/Desktop/argos3-harry/src/testing/unit/test-client.cpp
+argos3/core/utility/networking/tcp_socket.h
+-
+
+argos3/core/config.h
+
