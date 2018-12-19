@@ -1,5 +1,0 @@
-#!/bin/sh
-
-export ARGOS_PLUGIN_PATH=/Users/harry/Desktop/argos3-harry/build/core:/Users/harry/Desktop/argos3-harry/build/testing:/Users/harry/Desktop/argos3-harry/build/plugins/robots/e-puck:/Users/harry/Desktop/argos3-harry/build/plugins/robots/eye-bot:/Users/harry/Desktop/argos3-harry/build/plugins/robots/foot-bot:/Users/harry/Desktop/argos3-harry/build/plugins/robots/generic:/Users/harry/Desktop/argos3-harry/build/plugins/robots/prototype:/Users/harry/Desktop/argos3-harry/build/plugins/robots/spiri:/Users/harry/Desktop/argos3-harry/build/plugins/simulator/visualizations/qt-opengl:/Users/harry/Desktop/argos3-harry/build/plugins/simulator/entities:/Users/harry/Desktop/argos3-harry/build/plugins/simulator/physics_engines/dynamics2d:/Users/harry/Desktop/argos3-harry/build/plugins/simulator/physics_engines/dynamics3d:/Users/harry/Desktop/argos3-harry/build/plugins/simulator/physics_engines/physx:/Users/harry/Desktop/argos3-harry/build/plugins/simulator/physics_engines/pointmass3d:/Users/harry/Desktop/argos3-harry/build/plugins/simulator/media
-
-export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${ARGOS_PLUGIN_PATH}
