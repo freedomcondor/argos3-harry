@@ -4,10 +4,10 @@
  * @author Carlo Pinciroli - <ilpincy@gmail.com>
  */
 
-#include "qtopengl_log_stream.h"
-#include "qtopengl_main_window.h"
-#include "qtopengl_user_functions.h"
 #include "qtopengl_widget.h"
+#include "qtopengl_log_stream.h"
+#include "qtopengl_user_functions.h"
+#include "qtopengl_main_window.h"
 
 #include <argos3/core/config.h>
 #include <argos3/core/utility/plugins/dynamic_loading.h>
@@ -96,9 +96,9 @@ namespace argos {
          if(m_pcQTOpenGLItem != NULL) {
             /* Calculate the candidate sizes for the QTOpenGL widget */
             /* One is height-driven */
-            QRect cCandidate1(r.x(), r.y(), (r.height() * 16) / 9, r.height());
+            QRect cCandidate1(r.x(), r.y(), (r.height() * 4) / 3, r.height());
             /* The other is width-driven */
-            QRect cCandidate2(r.x(), r.y(), r.width(), (r.width() * 9) / 16);
+            QRect cCandidate2(r.x(), r.y(), r.width(), (r.width() * 3) / 4);
             /* Pick the one that fits the rectangle better */
             if(r.contains(cCandidate1)) {
                /* Horizontal padding needed */
@@ -125,12 +125,6 @@ namespace argos {
    /****************************************/
 
    CQTOpenGLMainWindow::CQTOpenGLMainWindow(TConfigurationNode& t_tree) :
-      m_pcLogDock(NULL),
-      m_pcLogErrDock(NULL),
-      m_pcDockLogBuffer(NULL),
-      m_pcDockLogErrBuffer(NULL),
-      m_pcLogStream(NULL),
-      m_pcLogErrStream(NULL),
       m_pcUserFunctions(NULL) {
       /* Main window settings */
       std::string strTitle;
@@ -159,7 +153,7 @@ namespace argos {
       CreateExperimentToolBar();
       CreateCameraToolBar();
       /* Create the message dock window */
-      //CreateLogMessageDock();
+      CreateLogMessageDock();
       /* Restore settings, if any */
       ReadSettingsPostCreation();
       /* Creates the signal/slot connections */
@@ -179,12 +173,8 @@ namespace argos {
 
    CQTOpenGLMainWindow::~CQTOpenGLMainWindow() {
       delete m_pcUserFunctions;
-      if(m_pcLogStream) {
-         delete m_pcLogStream;
-      }
-      if(m_pcLogErrStream) {
-         delete m_pcLogErrStream;
-      }
+      delete m_pcLogStream;
+      delete m_pcLogErrStream;
       if(m_bWasLogColored) {
          LOG.EnableColoredOutput();
          LOGERR.EnableColoredOutput();
@@ -219,16 +209,6 @@ namespace argos {
          m_strTextureDir = QString::fromStdString(CSimulator::GetInstance().GetInstallationDirectory());
          m_strTextureDir += "/include/argos3/plugins/simulator/visualizations/qt-opengl/textures/";
       }
-      if(cSettings.contains("model_dir")) {
-         m_strModelDir = cSettings.value("model_dir").toString();
-         if(m_strModelDir.at(m_strModelDir.length()-1) != '/') {
-            m_strModelDir.append("/");
-         }
-      }
-      else {
-         m_strModelDir = QString::fromStdString(CSimulator::GetInstance().GetInstallationDirectory());
-         m_strModelDir += "/include/argos3/plugins/simulator/visualizations/qt-opengl/models/";
-      }
       cSettings.endGroup();
    }
 
@@ -253,7 +233,6 @@ namespace argos {
       cSettings.setValue("position", pos());
       cSettings.setValue("icon_dir", m_strIconDir);
       cSettings.setValue("texture_dir", m_strTextureDir);
-      cSettings.setValue("model_dir", m_strModelDir);
       cSettings.endGroup();
    }
 
@@ -375,14 +354,11 @@ namespace argos {
    void CQTOpenGLMainWindow::CreateExperimentToolBar() {
       m_pcExperimentToolBar = addToolBar(tr("Experiment"));
       m_pcExperimentToolBar->setObjectName("ExperimentToolBar");
-      m_pcExperimentToolBar->setIconSize(QSize(24,24));
+      m_pcExperimentToolBar->setIconSize(QSize(32,32));
       m_pcCurrentStepLCD = new QLCDNumber(m_pcExperimentToolBar);
       m_pcCurrentStepLCD->setToolTip(tr("Current step"));
       m_pcCurrentStepLCD->setDigitCount(6);
       m_pcCurrentStepLCD->setSegmentStyle(QLCDNumber::Flat);
-      m_pcCurrentStepLCD->setFrameStyle(QFrame::NoFrame);
-      //m_pcCurrentStepLCD->setLineWidth(0);
-
       m_pcExperimentToolBar->addWidget(m_pcCurrentStepLCD);
       m_pcExperimentToolBar->addSeparator();
       if(! CSimulator::GetInstance().IsRealTimeClock()) {
@@ -435,7 +411,7 @@ namespace argos {
                                          Qt::RightToolBarArea |
                                          Qt::BottomToolBarArea);
       m_pcCameraToolBar->setObjectName("CameraToolBar");
-      m_pcCameraToolBar->setIconSize(QSize(24,24));
+      m_pcCameraToolBar->setIconSize(QSize(32,32));
       m_pcCameraToolBar->addActions(m_pcSwitchCameraActions);
       m_pcCameraToolBar->addSeparator();
       m_pcFocalLength = new QDoubleSpinBox(m_pcCameraToolBar);
@@ -446,7 +422,7 @@ namespace argos {
       m_pcFocalLength->setRange(1.0f, 999.0f);
       m_pcFocalLength->setValue(m_pcOpenGLWidget->GetCamera().GetSetting(0).LensFocalLength * 1000.0f);
       m_pcCameraToolBar->addWidget(m_pcFocalLength);
-      //addToolBar(Qt::LeftToolBarArea, m_pcCameraToolBar);
+      addToolBar(Qt::LeftToolBarArea, m_pcCameraToolBar);
    }
 
    /****************************************/
@@ -471,7 +447,7 @@ namespace argos {
    /****************************************/
 
    void CQTOpenGLMainWindow::CreateHelpMenu() {
-      m_pcHelpMenu = menuBar()->addMenu(tr("&About"));
+      m_pcHelpMenu = menuBar()->addMenu(tr("&?"));
       m_pcHelpMenu->addAction(m_pcAboutQTAction);
    }
 
@@ -840,12 +816,8 @@ namespace argos {
       }
       /* Reset step counter and log */
       m_pcCurrentStepLCD->display(0);
-      if(m_pcDockLogBuffer != NULL) {
-         m_pcDockLogBuffer->setHtml("<b>[t=0]</b> Log restarted.");
-      }
-      if(m_pcDockLogErrBuffer != NULL) {
-         m_pcDockLogErrBuffer->setHtml("<b>[t=0]</b> LogErr restarted.");
-      }
+      m_pcDockLogBuffer->setHtml("<b>[t=0]</b> Log restarted.");
+      m_pcDockLogErrBuffer->setHtml("<b>[t=0]</b> LogErr restarted.");
       /* Call OpenGL widget */
       m_pcOpenGLWidget->ResetExperiment();
       m_pcUserFunctions->Reset();

@@ -66,10 +66,6 @@ namespace argos {
          return m_strTextureDir;
       }
 
-      inline const QString& GetModelDir() const {
-         return m_strModelDir;
-      }
-
    private:
 
       void ReadSettingsPreCreation();
@@ -229,7 +225,6 @@ namespace argos {
       CQTOpenGLWidget* m_pcOpenGLWidget;
       QString m_strIconDir;
       QString m_strTextureDir;
-      QString m_strModelDir;
 
       EExperimentState m_eExperimentState;
 

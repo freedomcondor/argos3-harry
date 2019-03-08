@@ -22,8 +22,6 @@ namespace argos {
 #include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_camera.h>
 #include <argos3/core/simulator/entity/entity.h>
 #include <argos3/core/utility/datatypes/datatypes.h>
-#include <argos3/core/utility/datatypes/color.h>
-
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QOpenGLTexture>
@@ -170,27 +168,6 @@ namespace argos {
        */
       void DrawEntity(CEmbodiedEntity& c_entity);
 
-      struct SDebugLine {
-         SDebugLine(const CVector3& c_start,
-                    const CVector3& c_end,
-                    bool b_draw_end_points = true,
-                    Real f_thickness = 3.0f,
-                    const CColor& c_color = CColor::BLACK) :
-            Start(c_start),
-            End(c_end),
-            DrawEndPoints(b_draw_end_points),
-            Thickness(f_thickness),
-            Color(c_color) {}
-
-         CVector3 Start;
-         CVector3 End;
-         bool DrawEndPoints;
-         Real Thickness;
-         CColor Color;
-      };
-
-      std::vector<SDebugLine> m_vecDebugLines;
-
       /**
        * Draws a ray.
        */
@@ -205,21 +182,21 @@ namespace argos {
        * Called internally by Qt to set the aspect ratio.
        */
       inline virtual int heightForWidth(int w) const {
-         return (w * 9) / 16;
+         return (w * 3) / 4;
       }
 
       /**
        * Called internally by Qt to know the preferred widget size.
        */
       inline virtual QSize sizeHint() const {
-         return QSize(1280,720);
+         return QSize(1024,768);
       }
 
       /**
        * Called internally by Qt to know the minimum widget size.
        */
       inline virtual QSize minimumSize() const {
-         return QSize(640,360);
+         return QSize(320,240);
       }
 
       /**
@@ -352,7 +329,6 @@ namespace argos {
       virtual void mousePressEvent(QMouseEvent* pc_event);
       virtual void mouseReleaseEvent(QMouseEvent* pc_event);
       virtual void mouseMoveEvent(QMouseEvent* pc_event);
-      virtual void wheelEvent(QWheelEvent *event);
       virtual void keyPressEvent(QKeyEvent* pc_event);
       virtual void keyReleaseEvent(QKeyEvent* pc_event);
       virtual void resizeEvent(QResizeEvent* pc_event);
@@ -364,6 +340,7 @@ namespace argos {
       CQTOpenGLMainWindow& m_cMainWindow;
       /** Reference to the user functions */
       CQTOpenGLUserFunctions& m_cUserFunctions;
+
       /** Id used for the step timer */
       SInt32 nTimerId;
       /** True when fast forwarding */
